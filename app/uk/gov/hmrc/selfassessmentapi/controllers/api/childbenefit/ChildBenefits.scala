@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, FullFieldDescri
 import ErrorCode.{apply => _}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-case object ChildBenefits extends TaxYearPropertyType {
+case object ChildBenefits extends AnnualSummaryType {
   override val name: String = "childBenefit"
   override val documentationName = "Child Benefit"
   override val example: JsValue = toJson(ChildBenefit.example())
@@ -33,5 +33,4 @@ case object ChildBenefits extends TaxYearPropertyType {
     FullFieldDescription(name, "numberOfChildren", "Int", "Number of children taxpayer and their partner got Child Benefit for"),
     FullFieldDescription(name, "dateBenefitStopped", "Date", "The date that taxpayer and their partner stopped getting all Child Benefit payments", optional = true)
   )
-
 }

@@ -16,21 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-import play.api.libs.json.Json._
-import play.api.mvc.Action
-import play.api.mvc.hal._
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
-import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-import scala.concurrent.Future
-
-object TaxYearDiscoveryController extends controllers.TaxYearDiscoveryController {
-  override val context: String = AppContext.apiGatewayLinkContext
-
-  def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    Future.successful(Ok(halResource(obj(), discoveryLinks(utr, taxYear))))
-  }
-}
+object AnnualSummaryController extends controllers.AnnualSummaryController

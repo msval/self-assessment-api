@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving
 import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-case object CharitableGivings extends TaxYearPropertyType {
+case object CharitableGivings extends AnnualSummaryType {
 
   override val name = "charitableGivings"
   override val documentationName = "Charitable Givings"

@@ -34,6 +34,7 @@ object Helpers extends HalSupport with Links {
   private val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
 
   val enabledSourceTypes: Set[SourceType] = SourceTypes.types.filter(featureSwitch.isEnabled)
+  val enabledAnnualSummaryTypes = FeatureSwitchedAnnualSummaryTypes.types
 
   def enabledSummaries(sourceType: SourceType): Set[SummaryType] =
     sourceType.summaryTypes.filter(summary => featureSwitch.isEnabled(sourceType, summary.name))
@@ -97,7 +98,8 @@ object Helpers extends HalSupport with Links {
 
   def discoveryLinks(utr: SaUtr, taxYear: TaxYear): Set[HalLink] = {
     val sourceLinks = enabledSourceTypes.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
-    val links = sourceLinks + HalLink("liability", liabilityHref(utr, taxYear)) + HalLink("self", discoverTaxYearHref(utr, taxYear))
+    val annualSummaryLinks = enabledAnnualSummaryTypes.map(summaryType => HalLink(summaryType.name, s"/$utr/$taxYear/${summaryType.name}"))
+    val links = sourceLinks ++ annualSummaryLinks + HalLink("liability", liabilityHref(utr, taxYear)) + HalLink("self", discoverTaxYearHref(utr, taxYear))
     links
   }
 

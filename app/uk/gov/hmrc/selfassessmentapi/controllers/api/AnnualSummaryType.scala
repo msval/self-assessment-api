@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.api
 
-import org.scalatest.Matchers
-import org.scalatest.mock.MockitoSugar
+import play.api.libs.json.JsValue
 
-class TaxYearPropertiesSpec extends JsonSpec with MockitoSugar with Matchers {
-  "round trip valid TaxYearProperties json" in {
-    roundTripJson(TaxYearProperties.example())
-  }
+trait AnnualSummaryType extends Documentable {
+  val name: String
+  def example: JsValue
 }

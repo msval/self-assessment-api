@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.api
+package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import play.api.libs.json.JsValue
+import uk.gov.hmrc.selfassessmentapi.controllers
 
-trait TaxYearPropertyType extends Documentable {
-  val name: String
-  val example: JsValue
-}
-
+object AnnualSummaryController extends controllers.AnnualSummaryController

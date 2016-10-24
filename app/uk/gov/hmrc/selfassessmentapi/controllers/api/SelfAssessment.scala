@@ -16,8 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.api
 
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPerson
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGiving
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefit
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContribution
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoan
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOff
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 case class SelfAssessment(employments: Seq[Employment] = Seq(),
@@ -25,7 +31,12 @@ case class SelfAssessment(employments: Seq[Employment] = Seq(),
                           benefits: Seq[Benefits] = Seq(),
                           dividends: Seq[Dividend] = Seq(),
                           ukProperties: Seq[UKProperties] = Seq(),
-                          taxYearProperties: Option[TaxYearProperties] = None,
+                          pensionContribution: Option[PensionContribution] = None,
+                          charitableGiving: Option[CharitableGiving] = None,
+                          blindPerson: Option[BlindPerson] = None,
+                          studentLoan: Option[StudentLoan] = None,
+                          taxRefundedOrSetOff: Option[TaxRefundedOrSetOff] = None,
+                          childBenefit: Option[ChildBenefit] = None,
                           furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Seq(),
                           banks: Seq[Bank] = Seq()) {
   private def furnishedHolidayLettingsFor(propertyLocationType: PropertyLocationType) = furnishedHolidayLettings.filter(_.propertyLocation == propertyLocationType)

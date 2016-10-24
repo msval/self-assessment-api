@@ -155,30 +155,6 @@ object SelfEmploymentGoodsAndServicesOwnUseSummary {
   }
 }
 
-case class TaxYearProperties(id: BSONObjectID,
-                             saUtr: SaUtr,
-                             taxYear: TaxYear,
-                             lastModifiedDateTime: DateTime,
-                             createdDateTime: DateTime,
-                             pensionContributions: Option[PensionContribution] = None)
-  extends SelfAssessmentMetadata {
-
-  def toTaxYearProperties = api.TaxYearProperties(
-    id = Some(id.stringify),
-    pensionContributions = pensionContributions)
-}
-
-object TaxYearProperties {
-
-  implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
-
-  implicit val mongoFormats = ReactiveMongoFormats.mongoEntity({
-    implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
-    implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
-    Format(Json.reads[TaxYearProperties], Json.writes[TaxYearProperties])
-  })
-}
-
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: SourceId,
                           saUtr: SaUtr,

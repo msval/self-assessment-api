@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.config
 import play.api.Configuration
 import uk.gov.hmrc.selfassessmentapi.config.AppContext._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{AnnualSummaryType, SourceType}
 
 case class FeatureSwitch(value: Option[Configuration]) {
   val DEFAULT_VALUE = false
@@ -36,7 +36,7 @@ case class FeatureSwitch(value: Option[Configuration]) {
     case None => DEFAULT_VALUE
   }
 
-  def isEnabled(source: TaxYearPropertyType): Boolean = value match {
+  def isEnabled(source: AnnualSummaryType): Boolean = value match {
     case Some(config) => FeatureConfig(config).isSourceEnabled(source.name)
     case None => DEFAULT_VALUE
   }

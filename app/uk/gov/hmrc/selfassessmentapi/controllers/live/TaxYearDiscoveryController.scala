@@ -17,31 +17,23 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import play.api.hal.HalLink
-import play.api.libs.json.Json
 import play.api.libs.json.Json._
 import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
-import uk.gov.hmrc.selfassessmentapi.controllers._
+import uk.gov.hmrc.selfassessmentapi.controllers
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object TaxYearDiscoveryController extends TaxYearDiscoveryController {
+object TaxYearDiscoveryController extends controllers.TaxYearDiscoveryController {
   override val context: String = AppContext.apiGatewayLinkContext
-  private val taxYearPropertiesService = TaxYearPropertiesService()
 
-  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    val halLinks = buildSourceHalLinks(utr, taxYear) + HalLink("self", discoverTaxYearHref(utr, taxYear))
-    taxYearPropertiesService.findTaxYearProperties(utr, taxYear).map(taxYearProperties =>
-        Ok(halResource(taxYearProperties match {
-          case Some(t) => toJson(t)
-          case None => obj()
-        }, halLinks))
-    )
+  def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { _ =>
+    val halLinks = buildSourceHalLinks(utr, taxYear) ++
+      buildAnnualSummaryHalLinks(utr, taxYear) + HalLink("self", discoverTaxYearHref(utr, taxYear))
+
+    Future.successful(Ok(halResource(obj(), halLinks)))
   }
 
   private def buildSourceHalLinks(utr: SaUtr, taxYear: TaxYear) = {
@@ -54,19 +46,9 @@ object TaxYearDiscoveryController extends TaxYearDiscoveryController {
     }
   }
 
-  final def updateTaxYearProperties(utr: SaUtr, taxYear: TaxYear) =
-    Action.async(parse.json) {
-      implicit request =>
-        if (FeatureSwitchedTaxYearProperties.atLeastOnePropertyIsEnabled)
-          withJsonBody[TaxYearProperties] { taxYearProperties =>
-            validateRequest(taxYearProperties, taxYear.taxYear) match {
-              case Some(invalidPart) => Future.successful(BadRequest(Json.toJson(InvalidRequest(ErrorCode.INVALID_REQUEST, "Invalid request", Seq(invalidPart)))))
-              case None => taxYearPropertiesService.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
-                if (updated) Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
-                else BadRequest(Json.toJson(ErrorFeatureSwitched))
-              }
-            }
-          }
-        else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+  private def buildAnnualSummaryHalLinks(utr: SaUtr, taxYear: TaxYear) = {
+    FeatureSwitchedAnnualSummaryTypes.types.map { annualSummaryType =>
+      HalLink(annualSummaryType.name, s"/$utr/$taxYear/${annualSummaryType.name}")
     }
+  }
 }

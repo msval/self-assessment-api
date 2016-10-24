@@ -18,10 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution
 
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ObjectFieldDescription, PositiveMonetaryFieldDescription, FieldDescription}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearPropertyType
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-case object PensionContributions extends TaxYearPropertyType {
+case object PensionContributions extends AnnualSummaryType {
   override val name: String = "pensionContributions"
   override val documentationName = "Pension Contributions"
   override val example: JsValue = toJson(PensionContribution.example())
@@ -39,7 +38,7 @@ case object PensionContributions extends TaxYearPropertyType {
   )
 }
 
-case object PensionSavings extends TaxYearPropertyType {
+case object PensionSavings extends AnnualSummaryType {
   override val name: String = "pensionSavings"
   override val documentationName = "Pension Savings"
   override val example: JsValue = toJson(PensionSaving.example())

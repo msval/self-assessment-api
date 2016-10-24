@@ -21,7 +21,7 @@ import org.scalatest.Matchers
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
-import uk.gov.hmrc.selfassessmentapi.controllers.api.FeatureSwitchedTaxYearPropertyTypes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.FeatureSwitchedAnnualSummaryTypes$
 import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPersons
 import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGivings
 import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
@@ -63,4 +63,4 @@ class TaxYearPropertyTypesSpec extends UnitSpec with MockitoSugar with Matchers 
   }
 }
 
-sealed case class TestTaxYearPropertyTypes(override val featureSwitch: FeatureSwitch) extends FeatureSwitchedTaxYearPropertyTypes
+sealed case class TestTaxYearPropertyTypes(override val featureSwitch: FeatureSwitch) extends FeatureSwitchedAnnualSummaryTypes

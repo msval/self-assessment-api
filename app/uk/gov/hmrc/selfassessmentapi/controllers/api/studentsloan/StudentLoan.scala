@@ -42,7 +42,7 @@ object StudentLoan extends JsonMarshaller[StudentLoan] {
   override def example(id: Option[String]) = StudentLoan(StudentLoanPlanType.Plan1, Some(2000.0))
 }
 
-case object StudentLoans extends TaxYearPropertyType {
+case object StudentLoans extends AnnualSummaryType {
   override val name: String = "studentLoan"
   override val documentationName = "Student Loan"
   override val example: JsValue = toJson(StudentLoan.example())

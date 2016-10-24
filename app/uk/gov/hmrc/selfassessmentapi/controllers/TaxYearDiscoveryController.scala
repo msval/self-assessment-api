@@ -20,7 +20,6 @@ import java.lang.Integer._
 
 import org.joda.time.LocalDate
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
 
 trait TaxYearDiscoveryController extends BaseController with Links {
 
@@ -35,15 +34,4 @@ trait TaxYearDiscoveryController extends BaseController with Links {
       case _ => None
     }
   }
-
-  protected def validateRequest(taxYearProperties: TaxYearProperties, taxYear: String) = {
-    for {
-      childBenefit <- taxYearProperties.childBenefit
-      dateBenefitStopped <- childBenefit.dateBenefitStopped
-      taxYearValidationResult <- taxYearValidationErrors("/taxYearProperties/childBenefit/dateBenefitStopped",
-        dateBenefitStopped, taxYear)
-    } yield taxYearValidationResult
-  }
-
-
 }

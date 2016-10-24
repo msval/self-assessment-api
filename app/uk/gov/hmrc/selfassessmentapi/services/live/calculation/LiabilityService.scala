@@ -20,11 +20,18 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPersons
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGivings
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContributions
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, LiabilityId, SelfAssessment, SourceType, SourceTypes, TaxYear, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.live.annualsummaries._
 import uk.gov.hmrc.selfassessmentapi.controllers.{api, LiabilityError => _, LiabilityErrors => _}
+import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Benefits, Employment, Liability, SelfEmployment, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
-import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,8 +43,8 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                        liabilityRepo: LiabilityMongoRepository,
                        ukPropertiesRepo: UKPropertiesMongoRepository,
                        savingsRepo: BanksMongoRepository,
-                       taxYearPropertiesService: TaxYearPropertiesService,
                        dividendsRepo: DividendMongoRepository,
+                       saRepository: SelfAssessmentMongoRepository,
                        featureSwitch: FeatureSwitch) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[controllers.LiabilityErrors, api.Liability]]] = {
@@ -63,10 +70,16 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       dividends <- if (isSourceEnabled(SourceTypes.Dividends)) dividendsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[Dividend]())
       banks <- if (isSourceEnabled(SourceTypes.Banks)) savingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[Bank]())
       furnishedHolidayLettings <- if (isSourceEnabled(SourceTypes.FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[FurnishedHolidayLettings]())
-      taxYearProperties <- taxYearPropertiesService.findTaxYearProperties(saUtr, taxYear)
+      pensionContribution <- if (isAnnualSummaryEnabled(PensionContributions)) saRepository.PensionContributionRepository.find(saUtr, taxYear) else Future.successful(None)
+      charitableGiving <- if (isAnnualSummaryEnabled(CharitableGivings)) saRepository.CharitableGivingRepository.find(saUtr, taxYear) else Future.successful(None)
+      blindPerson <- if (isAnnualSummaryEnabled(BlindPersons)) saRepository.BlindPersonRepository.find(saUtr, taxYear) else Future.successful(None)
+      studentLoan <- if (isAnnualSummaryEnabled(StudentLoans)) saRepository.StudentLoanRepository.find(saUtr, taxYear) else Future.successful(None)
+      taxRefundedOrSetOff <- if (isAnnualSummaryEnabled(TaxRefundedOrSetOffs)) saRepository.TaxRefundedOrSetOffRepository.find(saUtr, taxYear) else Future.successful(None)
+      childBenefit <- if (isAnnualSummaryEnabled(ChildBenefits)) saRepository.ChildBenefitsRepository.find(saUtr, taxYear) else Future.successful(None)
       liability = Liability.create(saUtr, taxYear, SelfAssessment(employments = employments, selfEmployments = selfEmployments,
         ukProperties = ukProperties, benefits = benefits, furnishedHolidayLettings = furnishedHolidayLettings,
-        dividends = dividends, banks = banks, taxYearProperties = taxYearProperties))
+        dividends = dividends, banks = banks, pensionContribution = pensionContribution, charitableGiving = charitableGiving,
+        blindPerson = blindPerson, studentLoan = studentLoan, taxRefundedOrSetOff = taxRefundedOrSetOff, childBenefit = childBenefit))
       liability <- liabilityRepo.save(LiabilityOrError(liability))
     } yield
       liability match {
@@ -76,7 +89,7 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
   }
 
   private[calculation] def isSourceEnabled(sourceType: SourceType) = featureSwitch.isEnabled(sourceType)
-
+  private[calculation] def isAnnualSummaryEnabled(annualSummaryType: AnnualSummaryType) = featureSwitch.isEnabled(annualSummaryType)
 }
 
 object LiabilityService {
@@ -88,8 +101,8 @@ object LiabilityService {
                                                   LiabilityRepository(),
                                                   UKPropertiesRepository(),
                                                   BanksRepository(),
-                                                  TaxYearPropertiesService(),
                                                   DividendRepository(),
+                                                  SelfAssessmentRepository(),
                                                   FeatureSwitch(AppContext.featureSwitch))
 
   def apply() = service

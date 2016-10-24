@@ -31,8 +31,10 @@ trait TaxYearsDiscoveryController
     extends BaseController with HeaderValidator with Links {
 
   final def discoverTaxYears(utr: SaUtr) = Action.async { request =>
-      val taxYearLinks = AppContext.supportedTaxYears.map(taxYear => HalLink(taxYear, discoverTaxYearHref(utr, TaxYear(taxYear))))
+      val taxYearLinks = AppContext.supportedTaxYears.map(taxYear => HalLink(taxYear, taxYearHref(utr, TaxYear(taxYear))))
       val links = taxYearLinks + HalLink("self", discoverTaxYearsHref(utr))
      Future.successful(Ok(halResource(JsObject(Nil), links)))
     }
+
+  private def taxYearHref(utr: SaUtr, taxYear: TaxYear) = s"/$utr/$taxYear"
 }

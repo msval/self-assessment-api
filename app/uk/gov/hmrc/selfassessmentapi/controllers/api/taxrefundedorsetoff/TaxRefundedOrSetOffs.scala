@@ -21,7 +21,7 @@ import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PositiveMonetaryFieldDescription
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-case object TaxRefundedOrSetOffs extends TaxYearPropertyType {
+case object TaxRefundedOrSetOffs extends AnnualSummaryType {
   override val name: String = "taxRefundedOrSetOff"
   override val documentationName = "Tax Refunded or Set Off"
   override val example: JsValue = toJson(TaxRefundedOrSetOff.example())

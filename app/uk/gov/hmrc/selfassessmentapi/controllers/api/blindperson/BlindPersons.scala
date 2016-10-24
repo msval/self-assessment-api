@@ -20,7 +20,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-case object BlindPersons extends TaxYearPropertyType {
+case object BlindPersons extends AnnualSummaryType {
   override val name: String = "blindPerson"
   override val documentationName = "Blind Person"
   override val example: JsValue = toJson(BlindPerson.example())

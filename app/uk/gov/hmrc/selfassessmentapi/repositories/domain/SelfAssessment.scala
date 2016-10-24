@@ -21,15 +21,25 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPerson
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGiving
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefit
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContribution
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoan
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOff
 
 case class SelfAssessment(id: BSONObjectID,
                           saUtr: SaUtr,
                           taxYear: TaxYear,
                           createdDateTime: DateTime,
                           lastModifiedDateTime: DateTime,
-                          taxYearProperties: Option[api.TaxYearProperties] = None)
+                          pensionContribution: Option[PensionContribution] = None,
+                          charitableGiving: Option[CharitableGiving] = None,
+                          blindPerson: Option[BlindPerson] = None,
+                          studentLoan: Option[StudentLoan] = None,
+                          taxRefundedOrSetOff: Option[TaxRefundedOrSetOff] = None,
+                          childBenefit: Option[ChildBenefit] = None)
   extends SelfAssessmentMetadata
 
 object SelfAssessment {

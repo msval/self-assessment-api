@@ -25,7 +25,13 @@ import reactivemongo.bson.{BSONBoolean, BSONDateTime, BSONDocument, BSONDouble, 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPerson
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGiving
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefit
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContribution
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoan
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOff
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfAssessment
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -43,7 +49,7 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
     mongo,
     domainFormat = SelfAssessment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
-    with AtomicUpdate[SelfAssessment] {
+    with AtomicUpdate[SelfAssessment] { self =>
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("sa_utr_taxyear"), unique = true),
@@ -51,7 +57,6 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
 
 
   def touch(saUtr: SaUtr, taxYear: TaxYear) = {
-
     for {
       result <- atomicUpsert(
         BSONDocument("saUtr" -> BSONString(saUtr.toString), "taxYear" -> BSONString(taxYear.toString)),
@@ -93,118 +98,46 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
 
   def isInsertion(suppliedId: BSONObjectID, returned: SelfAssessment): Boolean = suppliedId.equals(returned.id)
 
-  def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Unit] = {
-    val now = DateTime.now(DateTimeZone.UTC)
+  object ChildBenefitsRepository extends AnnualSummaryRepository[ChildBenefit] {
+    override def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[ChildBenefit]] =
+      self.findBy(saUtr, taxYear).map(_.flatMap(_.childBenefit))
 
-    for {
-      result <- atomicUpsert(
-        BSONDocument("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear),
-        BSONDocument(
-          setOnInsert(now),
-          "$set" -> constructTaxYearPropertiesBson(taxYearProperties, now)
-        ))
-    } yield ()
+    override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, summary: ChildBenefit): Future[Boolean] = ???
   }
 
-  private def constructTaxYearPropertiesBson(taxYearProperties: TaxYearProperties, now: DateTime): BSONDocument = {
-    BSONDocument(
-      lastModifiedDateTimeModfier(now),
-      "taxYearProperties" -> BSONDocument(
-        taxYearPensionContributionsBson(taxYearProperties),
-        taxYearCharitableGivingsBson(taxYearProperties),
-        taxYearBlindPersonBson(taxYearProperties),
-        taxYearStudentLoanBson(taxYearProperties),
-        taxYearTaxRefundedOrSetOffBson(taxYearProperties),
-        taxYearChildBenefitBson(taxYearProperties)
-      )
-    )
+  object TaxRefundedOrSetOffRepository extends AnnualSummaryRepository[TaxRefundedOrSetOff] {
+    override def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxRefundedOrSetOff]] =
+      self.findBy(saUtr, taxYear).map(_.flatMap(_.taxRefundedOrSetOff))
+
+    override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, summary: TaxRefundedOrSetOff): Future[Boolean] = ???
   }
 
-  private def taxYearPensionContributionsBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
-    taxYearProperties.pensionContributions
-      .map(pensionContributions =>
-            "pensionContributions" -> BSONDocument(
-              Seq(
-                "ukRegisteredPension" -> pensionContributions.ukRegisteredPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                "retirementAnnuity" -> pensionContributions.retirementAnnuity.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                "employerScheme" -> pensionContributions.employerScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                "pensionSavings" -> BSONDocument(Seq(
-                  "excessOfAnnualAllowance" -> pensionContributions.pensionSavings.map(_.excessOfAnnualAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull),
-                  "taxPaidByPensionScheme" -> pensionContributions.pensionSavings.map(_.taxPaidByPensionScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull)
-                )))))
-      .getOrElse("pensionContributions" -> BSONNull)
+  object StudentLoanRepository extends AnnualSummaryRepository[StudentLoan] {
+    override def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[StudentLoan]] =
+      self.findBy(saUtr, taxYear).map(_.flatMap(_.studentLoan))
+
+    override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, summary: StudentLoan): Future[Boolean] = ???
   }
 
-  private def taxYearCharitableGivingsBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
-    taxYearProperties.charitableGivings
-      .map(charitableGivings =>
-        "charitableGivings" -> BSONDocument(Seq(
-            "giftAidPayments" -> charitableGivings.giftAidPayments.map(giftAid =>
-              BSONDocument(Seq(
-                "totalInTaxYear" -> giftAid.totalInTaxYear.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                "oneOff" -> giftAid.oneOff.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                "toNonUkCharities" -> giftAid.toNonUkCharities.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                "carriedBackToPreviousTaxYear" -> giftAid.carriedBackToPreviousTaxYear.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                "carriedFromNextTaxYear" -> giftAid.carriedFromNextTaxYear.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
-              ))).getOrElse(BSONNull),
-            "sharesSecurities" -> charitableGivings.sharesSecurities.map(sharesAndSecs =>
-              BSONDocument(Seq(
-                "totalInTaxYear" -> BSONDouble(sharesAndSecs.totalInTaxYear.doubleValue()),
-                "toNonUkCharities" -> sharesAndSecs.toNonUkCharities.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
-              ))).getOrElse(BSONNull),
-            "landProperties" -> charitableGivings.landProperties.map(landProperties =>
-            BSONDocument(Seq(
-              "totalInTaxYear" -> BSONDouble(landProperties.totalInTaxYear.doubleValue()),
-              "toNonUkCharities" -> landProperties.toNonUkCharities.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
-            ))).getOrElse(BSONNull)
-          ))).getOrElse("charitableGivings" -> BSONNull)
+  object BlindPersonRepository extends AnnualSummaryRepository[BlindPerson] {
+    override def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[BlindPerson]] =
+      self.findBy(saUtr, taxYear).map(_.flatMap(_.blindPerson))
+
+    override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, summary: BlindPerson): Future[Boolean] = ???
   }
 
-  private def taxYearBlindPersonBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
-    taxYearProperties.blindPerson
-      .map(blindPerson =>
-      "blindPerson" -> BSONDocument(Seq(
-        "country" -> blindPerson.country.map(x => BSONString(x.toString)).getOrElse(BSONNull),
-        "registrationAuthority" -> blindPerson.registrationAuthority.map(BSONString).getOrElse(BSONNull),
-        "spouseSurplusAllowance" -> blindPerson.spouseSurplusAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-        "wantSpouseToUseSurplusAllowance" -> blindPerson.wantSpouseToUseSurplusAllowance.map(BSONBoolean).getOrElse(BSONNull)
-      ))).getOrElse("blindPerson" -> BSONNull)
+  object CharitableGivingRepository extends AnnualSummaryRepository[CharitableGiving] {
+    override def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[CharitableGiving]] =
+      self.findBy(saUtr, taxYear).map(_.flatMap(_.charitableGiving))
+
+    override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, summary: CharitableGiving): Future[Boolean] = ???
   }
 
-  private def taxYearStudentLoanBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
-    taxYearProperties.studentLoan
-      .map(loan =>
-      "studentLoan" -> BSONDocument(Seq(
-        "planType" -> BSONString(loan.planType.toString),
-        "deductedByEmployers" -> loan.deductedByEmployers.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
-      ))).getOrElse("studentLoan" -> BSONNull)
+  object PensionContributionRepository extends AnnualSummaryRepository[PensionContribution] {
+    override def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[PensionContribution]] =
+      self.findBy(saUtr, taxYear).map(_.flatMap(_.pensionContribution))
+
+    override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, summary: PensionContribution): Future[Boolean] = ???
   }
 
-  def taxYearTaxRefundedOrSetOffBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
-    taxYearProperties.taxRefundedOrSetOff
-      .map(taxRefundedOrSetOff =>
-      "taxRefundedOrSetOff" -> BSONDocument(Seq(
-        "amount" -> BSONDouble(taxRefundedOrSetOff.amount.doubleValue())
-      ))).getOrElse("taxRefundedOrSetOff" -> BSONNull)
-  }
-
-  def taxYearChildBenefitBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
-    taxYearProperties.childBenefit
-      .map(childBenefit =>
-      "childBenefit" -> BSONDocument(Seq(
-        "amount" -> BSONDouble(childBenefit.amount.doubleValue()),
-        "numberOfChildren" -> BSONInteger(childBenefit.numberOfChildren),
-        "dateBenefitStopped" -> childBenefit.dateBenefitStopped.map(x => BSONString(x.toString)).getOrElse(BSONNull)
-      ))).getOrElse("childBenefit" -> BSONNull)
-  }
-
-  def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] = {
-    for {
-      optionSa <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear).map(_.headOption)
-    } yield for {
-      sa <- optionSa
-      taxYearProperties <- sa.taxYearProperties
-    } yield taxYearProperties
-  }
 }

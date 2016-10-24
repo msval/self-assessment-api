@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{FeatureSwitchedTaxYearProperties, SourceType, SourceTypes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{FeatureSwitchedAnnualSummaryTypes, SourceType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.APIStatus.APIStatus
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.AuthType._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.GroupName._
@@ -82,7 +82,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
   }
 
   private val switchedEndpoints = {
-    if (FeatureSwitchedTaxYearProperties.atLeastOnePropertyIsEnabled) {
+    if (FeatureSwitchedAnnualSummaryTypes.atLeastOnePropertyIsEnabled) {
       Seq(
         Endpoint(
           uriPattern = "/{utr}/{tax-year}",

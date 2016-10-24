@@ -24,8 +24,7 @@ object PensionSavingsCharges {
 
   private def getPensionSavings(selfAssessment: SelfAssessment) = {
     for {
-      taxYearProperties <- selfAssessment.taxYearProperties
-      pensionContribution <- taxYearProperties.pensionContributions
+      pensionContribution <- selfAssessment.pensionContribution
       pensionSavings <- pensionContribution.pensionSavings
     } yield pensionSavings
   }
