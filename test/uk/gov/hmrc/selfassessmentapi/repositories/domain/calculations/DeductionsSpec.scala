@@ -18,8 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
-import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContribution
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.TaxYearPropertiesBuilder
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.SelfAssessmentBuilder
 
 class DeductionsSpec extends UnitSpec {
 
@@ -51,14 +50,12 @@ class DeductionsSpec extends UnitSpec {
 
   "RetirementAnnuityContract" should {
     "be sum of the retirement annuity contributions, overseas pensions and employer pension contributions" in {
-      val taxYearProperties = TaxYearPropertiesBuilder()
+      val selfAssessment = SelfAssessmentBuilder()
         .withPensionContributions()
         .retirementAnnuityContract(500.73)
         .overseasPension(500.23)
         .employerScheme(500.11)
         .create()
-
-      val selfAssessment = SelfAssessment(taxYearProperties = Some(taxYearProperties))
 
       Deductions.RetirementAnnuityContract(selfAssessment) shouldBe 1502
     }
@@ -70,15 +67,13 @@ class DeductionsSpec extends UnitSpec {
 
   "PensionContribution" should {
     "be sum of the retirement annuity contributions, overseas pensions, employer pension contributions and uk registered pension" in {
-      val taxYearProperties = TaxYearPropertiesBuilder()
+      val selfAssessment = SelfAssessmentBuilder()
         .withPensionContributions()
         .retirementAnnuityContract(500)
         .overseasPension(500)
         .employerScheme(500)
         .ukRegisteredPension(500)
         .create()
-
-      val selfAssessment = SelfAssessment(taxYearProperties = Some(taxYearProperties))
 
       Deductions.PensionContribution(selfAssessment) shouldBe 2000
     }

@@ -16,7 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.builders
 
+import org.joda.time.LocalDate
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.controllers.api.UkCountryCodes._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPerson
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.{
+  CharitableGiving,
+  GiftAidPayments,
+  LandAndProperties,
+  SharesAndSecurities
+}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefit
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.{PensionContribution, PensionSaving}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoan
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoanPlanType.{apply => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOff
 
 class SelfAssessmentBuilder {
 
@@ -52,8 +66,113 @@ class SelfAssessmentBuilder {
     this
   }
 
-  def withTaxYearProperties(taxYearProperties: TaxYearPropertiesBuilder) = {
-    selfAssessment = selfAssessment.copy(taxYearProperties = Some(taxYearProperties.create()))
+  def withPensionContributions() = {
+    selfAssessment = selfAssessment.copy(pensionContribution = Some(PensionContribution()))
+    this
+  }
+
+  /*
+   * Pension Contributions
+   */
+
+  def ukRegisteredPension(amount: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(
+      pensionContribution = selfAssessment.pensionContribution.map(_.copy(ukRegisteredPension = Some(amount))))
+    this
+  }
+
+  def retirementAnnuityContract(amount: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(
+      pensionContribution = selfAssessment.pensionContribution.map(_.copy(retirementAnnuity = Some(amount))))
+    this
+  }
+
+  def employerScheme(amount: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(
+      pensionContribution = selfAssessment.pensionContribution.map(_.copy(employerScheme = Some(amount))))
+    this
+  }
+
+  def overseasPension(amount: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(
+      pensionContribution = selfAssessment.pensionContribution.map(_.copy(overseasPension = Some(amount))))
+    this
+  }
+
+  def pensionSavings(excessOfAnnualAllowance: BigDecimal = 0, taxPaidByPensionScheme: BigDecimal = 0) = {
+    selfAssessment = selfAssessment.copy(
+      pensionContribution = selfAssessment.pensionContribution.map(
+        _.copy(pensionSavings = Some(PensionSaving(excessOfAnnualAllowance = Some(excessOfAnnualAllowance),
+                                                   taxPaidByPensionScheme = Some(taxPaidByPensionScheme))))))
+    this
+  }
+
+  /*
+   * Charitable Givings
+   */
+
+  def giftAidPayments(totalInTaxYear: BigDecimal,
+                      oneOff: BigDecimal,
+                      toNonUkCharities: BigDecimal,
+                      carriedBackToPreviousTaxYear: BigDecimal,
+                      carriedFromNextTaxYear: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(
+      charitableGiving = selfAssessment.charitableGiving.map(
+        _.copy(
+          giftAidPayments = Some(
+            GiftAidPayments(Some(totalInTaxYear),
+                            Some(oneOff),
+                            Some(toNonUkCharities),
+                            Some(carriedBackToPreviousTaxYear),
+                            Some(carriedFromNextTaxYear))))))
+    this
+  }
+
+  def sharesSecurities(totalInTaxYear: BigDecimal, toNonUkCharities: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(
+      charitableGiving = selfAssessment.charitableGiving.map(
+        _.copy(sharesSecurities = Some(SharesAndSecurities(totalInTaxYear, Some(toNonUkCharities))))))
+    this
+  }
+
+  def landAndProperties(totalInTaxYear: BigDecimal, toNonUkCharities: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(
+      charitableGiving = selfAssessment.charitableGiving.map(
+        _.copy(landProperties = Some(LandAndProperties(totalInTaxYear, Some(toNonUkCharities))))))
+    this
+  }
+
+  def withCharitableGivings() = {
+    selfAssessment = selfAssessment.copy(charitableGiving = Some(CharitableGiving()))
+    this
+  }
+
+  def withChildBenefit(amount: BigDecimal, numberOfChildren: Int, dateBenefitStopped: LocalDate) = {
+    selfAssessment =
+      selfAssessment.copy(childBenefit = Some(ChildBenefit(amount, numberOfChildren, Some(dateBenefitStopped))))
+    this
+  }
+
+  def withBlindPerson(country: UkCountryCode,
+                      registrationAuthority: String,
+                      spouseSurplusAllowance: BigDecimal,
+                      wantsSpouseToUseSurplusAllowance: Boolean) = {
+    selfAssessment = selfAssessment.copy(
+      blindPerson = Some(
+        BlindPerson(Some(country),
+                    Some(registrationAuthority),
+                    Some(spouseSurplusAllowance),
+                    Some(wantsSpouseToUseSurplusAllowance))))
+    this
+  }
+
+  def withStudentLoan(planType: StudentLoanPlanType, deductedByEmployers: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(studentLoan = Some(StudentLoan(planType, Some(deductedByEmployers))))
+    this
+  }
+
+  def withTaxRefundedOrSetOff(amount: BigDecimal) = {
+    selfAssessment = selfAssessment.copy(taxRefundedOrSetOff = Some(TaxRefundedOrSetOff(amount)))
     this
   }
 

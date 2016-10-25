@@ -21,7 +21,7 @@ import org.scalatest.Matchers
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
-import uk.gov.hmrc.selfassessmentapi.controllers.api.FeatureSwitchedAnnualSummaryTypes$
+import uk.gov.hmrc.selfassessmentapi.controllers.api.FeatureSwitchedAnnualSummaryTypes
 import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPersons
 import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGivings
 import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
@@ -29,38 +29,39 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.Pension
 import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
 import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
 
-class TaxYearPropertyTypesSpec extends UnitSpec with MockitoSugar with Matchers {
+class AnnualSummaryTypesSpec extends UnitSpec with MockitoSugar with Matchers {
 
   val featureSwitch = mock[FeatureSwitch]
 
   "types" should {
-    Seq(PensionContributions, CharitableGivings, BlindPersons,
-      TaxRefundedOrSetOffs, StudentLoans, ChildBenefits).foreach { taxYearPropertyType =>
-      s"return $taxYearPropertyType if it is switched on" in {
-        given(featureSwitch.isEnabled(taxYearPropertyType)).willReturn(true)
-        TestTaxYearPropertyTypes(featureSwitch).types should contain only taxYearPropertyType
-      }
-      s"not return $taxYearPropertyType if it is switched off" in {
-        given(featureSwitch.isEnabled(taxYearPropertyType)).willReturn(false)
-        TestTaxYearPropertyTypes(featureSwitch).types should not contain taxYearPropertyType
-      }
+    Seq(PensionContributions, CharitableGivings, BlindPersons, TaxRefundedOrSetOffs, StudentLoans, ChildBenefits).foreach {
+      annualSummaryType =>
+        s"return $annualSummaryType if it is switched on" in {
+          given(featureSwitch.isEnabled(annualSummaryType)).willReturn(true)
+          AnnualSummaryTypes(featureSwitch).types should contain only annualSummaryType
+        }
+        s"not return $annualSummaryType if it is switched off" in {
+          given(featureSwitch.isEnabled(annualSummaryType)).willReturn(false)
+          AnnualSummaryTypes(featureSwitch).types should not contain annualSummaryType
+        }
     }
   }
 
   "forName" should {
     "return nothing when given an invalid name" in {
-      TestTaxYearPropertyTypes(featureSwitch).fromName("nonsense") shouldBe None
+      AnnualSummaryTypes(featureSwitch).fromName("nonsense") shouldBe None
     }
 
-    Seq(PensionContributions, CharitableGivings, BlindPersons,
-      TaxRefundedOrSetOffs, StudentLoans, ChildBenefits).foreach { taxYearPropertyType =>
-      s"return the corresponding type object when given valid name: $taxYearPropertyType" in {
-        given(featureSwitch.isEnabled(taxYearPropertyType)).willReturn(true)
-        TestTaxYearPropertyTypes(featureSwitch).fromName(taxYearPropertyType.name) shouldBe Some(taxYearPropertyType)
-      }
+    Seq(PensionContributions, CharitableGivings, BlindPersons, TaxRefundedOrSetOffs, StudentLoans, ChildBenefits).foreach {
+      taxYearPropertyType =>
+        s"return the corresponding type object when given valid name: $taxYearPropertyType" in {
+          given(featureSwitch.isEnabled(taxYearPropertyType)).willReturn(true)
+          AnnualSummaryTypes(featureSwitch).fromName(taxYearPropertyType.name) shouldBe Some(taxYearPropertyType)
+        }
     }
 
   }
 }
 
-sealed case class TestTaxYearPropertyTypes(override val featureSwitch: FeatureSwitch) extends FeatureSwitchedAnnualSummaryTypes
+sealed case class AnnualSummaryTypes(override val featureSwitch: FeatureSwitch)
+    extends FeatureSwitchedAnnualSummaryTypes

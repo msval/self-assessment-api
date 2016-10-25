@@ -101,3 +101,5 @@ class TaxYearPropertiesServiceSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 }
+
+object TestAnnualSummaryFeatureSwitch extends AnnualSummaryFeatureSwitch

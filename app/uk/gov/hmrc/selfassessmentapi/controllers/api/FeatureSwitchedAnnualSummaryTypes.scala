@@ -29,8 +29,9 @@ trait FeatureSwitchedAnnualSummaryTypes {
 
   def atLeastOnePropertyIsEnabled = types.nonEmpty
 
-  def types = Seq(PensionContributions, CharitableGivings, BlindPersons,
-    TaxRefundedOrSetOffs, StudentLoans, ChildBenefits).filter(featureSwitch.isEnabled)
+  def types =
+    Seq(PensionContributions, CharitableGivings, BlindPersons, TaxRefundedOrSetOffs, StudentLoans, ChildBenefits)
+      .filter(featureSwitch.isEnabled)
 
   def fromName(name: String): Option[AnnualSummaryType] = types.find(_.name == name)
 }

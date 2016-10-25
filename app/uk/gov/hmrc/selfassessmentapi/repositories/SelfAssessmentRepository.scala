@@ -21,7 +21,19 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONBoolean, BSONDateTime, BSONDocument, BSONDouble, BSONElement, BSONInteger, BSONNull, BSONObjectID, BSONString, BSONValue, Producer}
+import reactivemongo.bson.{
+  BSONBoolean,
+  BSONDateTime,
+  BSONDocument,
+  BSONDouble,
+  BSONElement,
+  BSONInteger,
+  BSONNull,
+  BSONObjectID,
+  BSONString,
+  BSONValue,
+  Producer
+}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
@@ -44,24 +56,22 @@ object SelfAssessmentRepository extends MongoDbConnection {
 }
 
 class SelfAssessmentMongoRepository(implicit mongo: () => DB)
-  extends ReactiveRepository[SelfAssessment, BSONObjectID](
-    "selfAssessments",
-    mongo,
-    domainFormat = SelfAssessment.mongoFormats,
-    idFormat = ReactiveMongoFormats.objectIdFormats)
+    extends ReactiveRepository[SelfAssessment, BSONObjectID]("selfAssessments",
+                                                             mongo,
+                                                             domainFormat = SelfAssessment.mongoFormats,
+                                                             idFormat = ReactiveMongoFormats.objectIdFormats)
     with AtomicUpdate[SelfAssessment] { self =>
 
-  override def indexes: Seq[Index] = Seq(
-    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("sa_utr_taxyear"), unique = true),
-    Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("sa_last_modified"), unique = false))
-
+  override def indexes: Seq[Index] =
+    Seq(Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("sa_utr_taxyear"), unique = true),
+        Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("sa_last_modified"), unique = false))
 
   def touch(saUtr: SaUtr, taxYear: TaxYear) = {
     for {
       result <- atomicUpsert(
-        BSONDocument("saUtr" -> BSONString(saUtr.toString), "taxYear" -> BSONString(taxYear.toString)),
-        touchModifier()
-      )
+                 BSONDocument("saUtr" -> BSONString(saUtr.toString), "taxYear" -> BSONString(taxYear.toString)),
+                 touchModifier()
+               )
     } yield ()
   }
 
@@ -73,16 +83,28 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
     )
   }
 
+  private def updateAnnualSummary(saUtr: SaUtr, taxYear: TaxYear, summary: BSONDocument): Future[Boolean] = {
+    val now = DateTime.now(DateTimeZone.UTC)
+
+    for {
+      result <- atomicUpsert(BSONDocument("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear),
+                             BSONDocument(
+                               setOnInsert(now),
+                               "$set" -> summary
+                             ))
+    } yield result.writeResult.ok
+  }
+
   private def setOnInsert(dateTime: DateTime): Producer[BSONElement] =
     "$setOnInsert" -> BSONDocument("createdDateTime" -> BSONDateTime(dateTime.getMillis))
 
   private def lastModifiedDateTimeModfier(dateTime: DateTime): Producer[BSONElement] =
     "lastModifiedDateTime" -> BSONDateTime(dateTime.getMillis)
 
-
   def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[SelfAssessment]] = {
     find(
-      "saUtr" -> BSONString(saUtr.toString), "taxYear" -> BSONString(taxYear.toString)
+      "saUtr" -> BSONString(saUtr.toString),
+      "taxYear" -> BSONString(taxYear.toString)
     ).map(_.headOption)
   }
 
@@ -102,7 +124,18 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
     override def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[ChildBenefit]] =
       self.findBy(saUtr, taxYear).map(_.flatMap(_.childBenefit))
 
-    override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, summary: ChildBenefit): Future[Boolean] = ???
+    override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, childBenefit: ChildBenefit): Future[Boolean] = {
+      val bsonDoc = BSONDocument(
+        Seq(
+          "childBenefit" -> BSONDocument(
+            Seq("amount" -> BSONDouble(childBenefit.amount.doubleValue()),
+                "numberOfChildren" -> BSONInteger(childBenefit.numberOfChildren),
+                "dateBenefitStopped" -> childBenefit.dateBenefitStopped
+                  .map(x => BSONString(x.toString))
+                  .getOrElse(BSONNull)))))
+
+      self.updateAnnualSummary(saUtr, taxYear, bsonDoc)
+    }
   }
 
   object TaxRefundedOrSetOffRepository extends AnnualSummaryRepository[TaxRefundedOrSetOff] {

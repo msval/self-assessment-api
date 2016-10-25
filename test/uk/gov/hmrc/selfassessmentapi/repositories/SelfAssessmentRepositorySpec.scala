@@ -16,18 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTime, LocalDate}
+import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYearProperties, UkCountryCodes}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.{PensionContribution, PensionSaving}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoanPlanType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfAssessment
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.TaxYearPropertiesBuilder
 
 class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
 
@@ -56,7 +53,11 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     }
 
     "update last modified if it does exist" in {
-      val sa1 = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now().minusMonths(1), DateTime.now().minusWeeks(1))
+      val sa1 = SelfAssessment(BSONObjectID.generate,
+                               saUtr,
+                               taxYear,
+                               DateTime.now().minusMonths(1),
+                               DateTime.now().minusWeeks(1))
 
       await(mongoRepository.insert(sa1))
       await(mongoRepository.touch(saUtr, taxYear))
@@ -79,7 +80,6 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       await(mongoRepository.insert(sa1))
       await(mongoRepository.insert(sa2))
 
-
       val records = await(mongoRepository.findBy(saUtr, taxYear))
 
       records.size shouldBe 1
@@ -89,9 +89,21 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
   "findOlderThan" should {
     "return records modified older than the lastModifiedDate" in {
-      val sa1 = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now().minusMonths(1), DateTime.now().minusMonths(1))
-      val sa2 = SelfAssessment(BSONObjectID.generate, generateSaUtr(), taxYear, DateTime.now().minusWeeks(2), DateTime.now().minusWeeks(2))
-      val sa3 = SelfAssessment(BSONObjectID.generate, generateSaUtr(), taxYear, DateTime.now().minusDays(1), DateTime.now().minusDays(1))
+      val sa1 = SelfAssessment(BSONObjectID.generate,
+                               saUtr,
+                               taxYear,
+                               DateTime.now().minusMonths(1),
+                               DateTime.now().minusMonths(1))
+      val sa2 = SelfAssessment(BSONObjectID.generate,
+                               generateSaUtr(),
+                               taxYear,
+                               DateTime.now().minusWeeks(2),
+                               DateTime.now().minusWeeks(2))
+      val sa3 = SelfAssessment(BSONObjectID.generate,
+                               generateSaUtr(),
+                               taxYear,
+                               DateTime.now().minusDays(1),
+                               DateTime.now().minusDays(1))
 
       await(mongoRepository.insert(sa1))
       await(mongoRepository.insert(sa2))
@@ -123,168 +135,28 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     }
   }
 
-  "findTaxYearProperties" should {
-    "return tax year properties matching utr and tax year" in {
-      val taxYearProps = TaxYearProperties(pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(10000.00))))
-      val sa = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now(), DateTime.now(), Some(taxYearProps))
-      await(mongoRepository.insert(sa))
-      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
+  "find annual summary" should {
+    "return an annual summary matching utr and tax year" in {
+      val pensionContributions = PensionContribution(ukRegisteredPension = Some(10000.00))
+      await(mongoRepository.PensionContributionRepository.createOrUpdate(saUtr, taxYear, pensionContributions))
+      val records = await(mongoRepository.PensionContributionRepository.find(saUtr, taxYear))
       records.size shouldBe 1
-      records shouldEqual Some(taxYearProps)
+      records shouldEqual Some(pensionContributions)
     }
   }
 
-  "updateTaxYearProperties" should {
-    "update the pension contribution for tax year properties matching utr and tax year" in {
-      val taxYearProps1 = TaxYearProperties(pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(10000.00))))
-      val sa = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now(), DateTime.now(), Some(taxYearProps1))
-      await(mongoRepository.insert(sa))
-      val taxYearProps2 = TaxYearProperties(pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(50000.00),
-        pensionSavings = Some(PensionSaving(Some(500.00), Some(500.00))))))
+  "create or update" should {
+    "create update the annual summary matching utr and tax year" in {
+      val pensionContributions = PensionContribution(ukRegisteredPension = Some(10000.00))
+      await(mongoRepository.PensionContributionRepository.createOrUpdate(saUtr, taxYear, pensionContributions))
+      val pensionContributions2 = PensionContribution(ukRegisteredPension = Some(50000.00),
+                                                      pensionSavings = Some(PensionSaving(Some(500.00), Some(500.00))))
 
-      await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, taxYearProps2))
+      await(mongoRepository.PensionContributionRepository.createOrUpdate(saUtr, taxYear, pensionContributions2))
 
-      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
-      records shouldEqual Some(taxYearProps2)
-    }
-
-    "update the charitable givings for tax year properties matching utr and tax year" in {
-      val charGivingsBefore = TaxYearPropertiesBuilder()
-        .withCharitableGivings()
-        .giftAidPayments(
-          totalInTaxYear = 100,
-          oneOff = 50,
-          toNonUkCharities = 20,
-          carriedBackToPreviousTaxYear = 20,
-          carriedFromNextTaxYear = 20)
-        .sharesSecurities(
-          totalInTaxYear = 500,
-          toNonUkCharities = 50)
-        .landAndProperties(
-          totalInTaxYear = 10000,
-          toNonUkCharities = 5000)
-        .create()
-
-      val selfAssessment =
-        SelfAssessment(BSONObjectID.generate, saUtr, taxYear, now, now, Some(charGivingsBefore))
-
-      await(mongoRepository.insert(selfAssessment))
-
-      val charGivingsAfter = TaxYearPropertiesBuilder()
-        .withCharitableGivings()
-        .giftAidPayments(
-          totalInTaxYear = 120,
-          oneOff = 55,
-          toNonUkCharities = 26,
-          carriedBackToPreviousTaxYear = 10,
-          carriedFromNextTaxYear = 22)
-        .sharesSecurities(
-          totalInTaxYear = 500.50,
-          toNonUkCharities = 55)
-        .landAndProperties(
-          totalInTaxYear = 10000.22,
-          toNonUkCharities = 500)
-        .create()
-
-
-      await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, charGivingsAfter))
-
-      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
-      records shouldEqual Some(charGivingsAfter)
-    }
-
-    "update the blind person for tax year properties matching utr and tax year" in {
-      val blindPersonBefore = TaxYearPropertiesBuilder()
-        .withBlindPerson(
-          country = UkCountryCodes.England,
-          registrationAuthority = "cake",
-          spouseSurplusAllowance = 1500.25,
-          wantsSpouseToUseSurplusAllowance = true)
-        .create()
-
-      val selfAssessment = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, now, now, Some(blindPersonBefore))
-
-      await(mongoRepository.insert(selfAssessment))
-
-      val blindPersonAfter = TaxYearPropertiesBuilder()
-        .withBlindPerson(
-          country = UkCountryCodes.Wales,
-          registrationAuthority = "lie",
-          spouseSurplusAllowance = 2100.05,
-          wantsSpouseToUseSurplusAllowance = false)
-        .create()
-
-      await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, blindPersonAfter))
-
-      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
-      records shouldEqual Some(blindPersonAfter)
-    }
-
-    "update the student loan for tax year properties matching utr and tax year" in {
-      val studentLoanBefore = TaxYearPropertiesBuilder()
-        .withStudentLoan(
-          planType = StudentLoanPlanType.Plan1,
-          deductedByEmployers = 20.20)
-        .create()
-
-      val selfAssessment = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, now, now, Some(studentLoanBefore))
-
-      await(mongoRepository.insert(selfAssessment))
-
-      val studentLoanAfter = TaxYearPropertiesBuilder()
-        .withStudentLoan(
-          planType = StudentLoanPlanType.Plan2,
-          deductedByEmployers = 100.50)
-        .create()
-
-      await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, studentLoanAfter))
-
-      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
-      records shouldEqual Some(studentLoanAfter)
-    }
-
-    "update the tax refunded or set off for tax year properties matching utr and tax year" in {
-      val taxRefundedBefore = TaxYearPropertiesBuilder()
-        .withTaxRefundedOrSetOff(500)
-        .create()
-
-      val selfAssessment = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, now, now, Some(taxRefundedBefore))
-
-      await(mongoRepository.insert(selfAssessment))
-
-      val taxRefundedAfter = TaxYearPropertiesBuilder()
-        .withTaxRefundedOrSetOff(20.20)
-        .create()
-
-      await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, taxRefundedAfter))
-
-      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
-      records shouldEqual Some(taxRefundedAfter)
-    }
-
-    "update the child benefit for tax year properties matching utr and tax year" in {
-      val childBenefitBefore = TaxYearPropertiesBuilder()
-        .withChildBenefit(
-          amount = 2500,
-          numberOfChildren = 2,
-          dateBenefitStopped = now.toLocalDate)
-        .create()
-
-      val selfAssessment = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, now, now, Some(childBenefitBefore))
-
-      await(mongoRepository.insert(selfAssessment))
-
-      val childBenefitAfter = TaxYearPropertiesBuilder()
-        .withChildBenefit(
-          amount = 1000,
-          numberOfChildren = 1,
-          dateBenefitStopped = new LocalDate(2012, 12, 12))
-        .create()
-
-      await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, childBenefitAfter))
-
-      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
-      records shouldEqual Some(childBenefitAfter)
+      val records = await(mongoRepository.PensionContributionRepository.find(saUtr, taxYear))
+      records shouldEqual Some(pensionContributions2)
     }
   }
+
 }
