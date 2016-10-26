@@ -6,7 +6,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SwitchPensionContributionOnSpec extends BaseFunctionalSpec {
   override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map(
-    "Test.feature-switch.pensionContributions.enabled" -> true,
+    "Test.feature-switch.pensionContribution.enabled" -> true,
     "Test.feature-switch.childBenefit.enabled" -> true))
 
   "if pension contribution is turned on then tax year resource" should {
@@ -15,7 +15,7 @@ class SwitchPensionContributionOnSpec extends BaseFunctionalSpec {
       val payload = Json.parse(
         s"""
            |{
-           | 	"pensionContributions": {
+           | 	"pensionContribution": {
            | 		"ukRegisteredPension": 1000.45,
            | 		"retirementAnnuity": 1000.0,
            | 		"employerScheme": 12000.05,
@@ -47,7 +47,7 @@ class SwitchPensionContributionOnSpec extends BaseFunctionalSpec {
 
 class SwitchPensionContributionOffSpec extends BaseFunctionalSpec {
   override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map(
-    "Test.feature-switch.pensionContributions.enabled" -> false,
+    "Test.feature-switch.pensionContribution.enabled" -> false,
     "Test.feature-switch.childBenefit.enabled" -> true))
 
   "if pension contribution is turned off then tax year resource" should {
@@ -56,7 +56,7 @@ class SwitchPensionContributionOffSpec extends BaseFunctionalSpec {
       val payload = Json.parse(
         s"""
            |{
-           | 	"pensionContributions": {
+           | 	"pensionContribution": {
            | 		"ukRegisteredPension": 1000.45,
            | 		"retirementAnnuity": 1000.0,
            | 		"employerScheme": 12000.05,
@@ -88,7 +88,7 @@ class SwitchPensionContributionOffSpec extends BaseFunctionalSpec {
 
 class SwitchCharitableGivingsOnSpec extends BaseFunctionalSpec {
   override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map(
-    "Test.feature-switch.charitableGivings.enabled" -> true,
+    "Test.feature-switch.charitableGiving.enabled" -> true,
     "Test.feature-switch.childBenefit.enabled" -> true))
 
   "if charitable givings are turned on then tax year resource" should {
@@ -97,7 +97,7 @@ class SwitchCharitableGivingsOnSpec extends BaseFunctionalSpec {
       val payload = Json.parse(
         s"""
            |{
-           | 	"charitableGivings": {
+           | 	"charitableGiving": {
            |     "giftAidPayments": {
            |       "totalInTaxYear": 10000.0,
            |       "oneOff": 5000.0,
@@ -140,7 +140,7 @@ class SwitchCharitableGivingsOnSpec extends BaseFunctionalSpec {
 
 class SwitchCharitableGivingsOffSpec extends BaseFunctionalSpec {
   override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map(
-    "Test.feature-switch.charitableGivings.enabled" -> false,
+    "Test.feature-switch.charitableGiving.enabled" -> false,
     "Test.feature-switch.childBenefit.enabled" -> true))
 
   "if charitable givings are turned off then tax year resource" should {
@@ -149,7 +149,7 @@ class SwitchCharitableGivingsOffSpec extends BaseFunctionalSpec {
       val payload = Json.parse(
         s"""
            |{
-           | 	"charitableGivings": {
+           | 	"charitableGiving": {
            |     "giftAidPayments": {
            |       "totalInTaxYear": 10000.0,
            |       "oneOff": 5000.0,

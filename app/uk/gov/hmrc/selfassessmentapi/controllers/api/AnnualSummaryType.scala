@@ -17,8 +17,19 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.api
 
 import play.api.libs.json.JsValue
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPersons
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGivings
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContributions
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
 
 trait AnnualSummaryType extends Documentable {
   val name: String
   def example: JsValue
+}
+
+object AnnualSummaryType {
+  val types =
+    Seq(PensionContributions, CharitableGivings, BlindPersons, TaxRefundedOrSetOffs, StudentLoans, ChildBenefits)
 }

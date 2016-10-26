@@ -21,14 +21,14 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case object CharitableGivings extends AnnualSummaryType {
 
-  override val name = "charitableGivings"
-  override val documentationName = "Charitable Givings"
+  override val name = "charitableGiving"
+  override val documentationName = "Charitable Giving"
 
-  override val title = "Sample charitable givings"
+  override val title = "Sample charitable giving"
 
   override val example = toJson(CharitableGiving.example())
 
-  override def description(action: String): String = s"$action a charitableGivings"
+  override def description(action: String): String = s"$action a charitableGiving"
 
   override val fieldDescriptions = Seq(
     PositiveMonetaryFieldDescription(name, "giftAidPayments.totalInTaxYear", "Total of Gift Aid payments made in the tax year", optional = true),

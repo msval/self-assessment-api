@@ -62,8 +62,9 @@ object Documentation extends BaseController with Links {
   private val utr = SaUtr("2234567890")
   private val taxYear = TaxYear("2016-17")
 
+  // FIXME: Update this documentation to account for the updated annual summaries (the code below no longer applies, hence it is commented out).
   private lazy val updateTaxYearPropertiesPage = if (FeatureSwitchedAnnualSummaryTypes.atLeastOnePropertyIsEnabled) {
-    Seq(EndpointDocumentation("Update Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.updateTaxYear(utr, taxYear)))
+    Seq.empty[EndpointDocumentation] //Seq(EndpointDocumentation("Update Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.updateAnnualSummaries(utr, taxYear)))
   } else Seq.empty[EndpointDocumentation]
 
   private lazy val sourceAndSummaryDocumentation = Helpers.enabledSourceTypes.toSeq.flatMap { sourceType =>

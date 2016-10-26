@@ -20,9 +20,9 @@ class DocumentationSpec extends BaseFunctionalSpec {
     "Test.feature-switch.bank.enabled" -> true,
 
     "Test.feature-switch.blindPerson.enabled" -> true,
-    "Test.feature-switch.charitableGivings.enabled" -> true,
+    "Test.feature-switch.charitableGiving.enabled" -> true,
     "Test.feature-switch.childBenefit.enabled" -> true,
-    "Test.feature-switch.pensionContributions.enabled" -> true,
+    "Test.feature-switch.pensionContribution.enabled" -> true,
     "Test.feature-switch.studentLoan.enabled" -> true,
     "Test.feature-switch.taxRefundedOrSetOff.enabled" -> true))
 

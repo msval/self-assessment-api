@@ -21,13 +21,13 @@ import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case object PensionContributions extends AnnualSummaryType {
-  override val name: String = "pensionContributions"
-  override val documentationName = "Pension Contributions"
+  override val name: String = "pensionContribution"
+  override val documentationName = "Pension Contribution"
   override val example: JsValue = toJson(PensionContribution.example())
 
-  override def description(action: String): String = s"$action a pensionContributions"
+  override def description(action: String): String = s"$action a pensionContribution"
 
-  override val title: String = "Sample pension contributions"
+  override val title: String = "Sample pension contribution"
 
   override val fieldDescriptions = Seq(
     PositiveMonetaryFieldDescription(name, "ukRegisteredPension", "Payments to registered pension schemes where basic rate tax relief will be claimed by your pension provider", optional = true),
@@ -39,10 +39,10 @@ case object PensionContributions extends AnnualSummaryType {
 }
 
 case object PensionSavings extends AnnualSummaryType {
-  override val name: String = "pensionSavings"
-  override val documentationName = "Pension Savings"
+  override val name: String = "pensionSaving"
+  override val documentationName = "Pension Saving"
   override val example: JsValue = toJson(PensionSaving.example())
-  override val title: String = "Sample pension savings"
+  override val title: String = "Sample pension saving"
 
   override def description(action: String): String = s"$action a pensionSavings"
 

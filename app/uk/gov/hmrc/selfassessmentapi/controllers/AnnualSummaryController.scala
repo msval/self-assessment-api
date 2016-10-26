@@ -69,7 +69,7 @@ trait AnnualSummaryController extends BaseController with Links {
         }
       }
       case Right(result) => result.map {
-        case true => Ok(halResource(obj(), Set(HalLink("self", s"/$utr/$taxYear/$annualSummaryType"))))
+        case true => Created(halResource(obj(), Set(HalLink("self", s"/$utr/$taxYear/$annualSummaryType"))))
         case false => notFound
       }
     }

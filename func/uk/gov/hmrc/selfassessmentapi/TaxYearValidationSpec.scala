@@ -7,8 +7,8 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 // FIXME: Refactor into live and sandbox tests
 
 class TaxYearValidationSpec extends BaseFunctionalSpec {
-  override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map("Test.feature-switch.pensionContributions.enabled" -> true,
-                                                                                         "Test.feature-switch.charitableGivings.enabled" -> true,
+  override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map("Test.feature-switch.pensionContribution.enabled" -> true,
+                                                                                         "Test.feature-switch.charitableGiving.enabled" -> true,
                                                                                          "Test.feature-switch.blindPerson.enabled" -> true,
                                                                                          "Test.feature-switch.studentLoan.enabled" -> true,
                                                                                          "Test.feature-switch.taxRefundedOrSetOff.enabled" -> true,
@@ -135,7 +135,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         s"""
            |
            | {
-           |   "pensionContributions": {
+           |   "pensionContribution": {
            | 		"ukRegisteredPension": 1000.45,
            | 		"retirementAnnuity": 1000.0,
            | 		"employerScheme": 12000.05,
@@ -164,7 +164,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
       val payload, expectedJson = Json.parse(
         s"""
            |{
-           | 	"pensionContributions": {
+           | 	"pensionContribution": {
            | 		"ukRegisteredPension": 1000.45,
            | 		"retirementAnnuity": 1000.0,
            | 		"employerScheme": 12000.05,
