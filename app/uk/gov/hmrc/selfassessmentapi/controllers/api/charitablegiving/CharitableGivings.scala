@@ -24,11 +24,11 @@ case object CharitableGivings extends AnnualSummaryType {
   override val name = "charitableGiving"
   override val documentationName = "Charitable Giving"
 
-  override val title = "Sample charitable giving"
+  override val title = "Sample Charitable Giving"
 
   override val example = toJson(CharitableGiving.example())
 
-  override def description(action: String): String = s"$action a charitableGiving"
+  override def description(action: String): String = s"$action a charitable giving"
 
   override val fieldDescriptions = Seq(
     PositiveMonetaryFieldDescription(name, "giftAidPayments.totalInTaxYear", "Total of Gift Aid payments made in the tax year", optional = true),

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, TaxYear, SourceType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{AnnualSummaryType, SourceId, SourceType, TaxYear}
 
 trait Links {
 
@@ -45,4 +45,7 @@ trait Links {
 
   def sourceTypeAndSummaryTypeIdHref(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId, summaryTypeName: String, id: String): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SummaryController.read(utr, taxYear, sourceType, seId, summaryTypeName, id).url)
+
+  def annualSummaryTypeHref(utr: SaUtr, taxYear: TaxYear, annualSummaryType: AnnualSummaryType): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.AnnualSummaryController.find(utr, taxYear, annualSummaryType.name).url)
 }

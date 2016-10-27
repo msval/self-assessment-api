@@ -25,9 +25,9 @@ case object BlindPersons extends AnnualSummaryType {
   override val documentationName = "Blind Person"
   override val example: JsValue = toJson(BlindPerson.example())
 
-  override def description(action: String): String = s"$action a blindPerson"
+  override def description(action: String): String = s"$action a blind person"
 
-  override val title: String = "Sample blind persons allowance"
+  override val title: String = "Sample Blind Persons Allowance"
 
   override val fieldDescriptions = Seq(
     FullFieldDescription(name, "country", "String", "Country of taxpayer's residence", optional = true),

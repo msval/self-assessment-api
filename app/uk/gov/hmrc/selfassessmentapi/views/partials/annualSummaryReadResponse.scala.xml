@@ -1,0 +1,11 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.controllers.api._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+
+@(saUtr: SaUtr, taxYear: TaxYear, annualSummaryType: AnnualSummaryType)
+
+<section id="@(s"sample-request-${annualSummaryType.name}")">
+    <title>@(annualSummaryType.title) response</title>
+    <httpStatus>200 (OK)</httpStatus>
+    <json>@annualSummaryTypeResponse(saUtr, taxYear, annualSummaryType, Some(annualSummaryType.example))</json>
+</section>

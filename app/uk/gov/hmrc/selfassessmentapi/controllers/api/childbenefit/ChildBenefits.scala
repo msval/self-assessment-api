@@ -26,8 +26,8 @@ case object ChildBenefits extends AnnualSummaryType {
   override val name: String = "childBenefit"
   override val documentationName = "Child Benefit"
   override val example: JsValue = toJson(ChildBenefit.example())
-  override def description(action: String): String = s"$action a childBenefit"
-  override val title: String = "Sample child benefit"
+  override def description(action: String): String = s"$action a child benefit"
+  override val title: String = "Sample Child Benefit"
   override val fieldDescriptions = Seq(
     PositiveMonetaryFieldDescription(name, "amount", "Total amount of Child Benefit taxpayer and their partner got for the tax year"),
     FullFieldDescription(name, "numberOfChildren", "Int", "Number of children taxpayer and their partner got Child Benefit for"),

@@ -24,12 +24,12 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.Pension
 import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
 import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
 
-trait AnnualSummaryType extends Documentable {
+trait AnnualSummaryType extends Documentable with Product with Serializable {
   val name: String
   def example: JsValue
 }
 
 object AnnualSummaryType {
   val types =
-    Seq(PensionContributions, CharitableGivings, BlindPersons, TaxRefundedOrSetOffs, StudentLoans, ChildBenefits)
+    Set(PensionContributions, CharitableGivings, BlindPersons, TaxRefundedOrSetOffs, StudentLoans, ChildBenefits)
 }

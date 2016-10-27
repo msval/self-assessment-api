@@ -9,3 +9,4 @@
     <httpStatus>200 (OK)</httpStatus>
     <json>@sourceTypeAndSummaryTypeIdResponse(summaryType.example(Some(summaryId)), saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)</json>
 </section>
+RE

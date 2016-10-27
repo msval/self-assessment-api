@@ -25,9 +25,9 @@ case object PensionContributions extends AnnualSummaryType {
   override val documentationName = "Pension Contribution"
   override val example: JsValue = toJson(PensionContribution.example())
 
-  override def description(action: String): String = s"$action a pensionContribution"
+  override def description(action: String): String = s"$action a pension contribution"
 
-  override val title: String = "Sample pension contribution"
+  override val title: String = "Sample Pension Contribution"
 
   override val fieldDescriptions = Seq(
     PositiveMonetaryFieldDescription(name, "ukRegisteredPension", "Payments to registered pension schemes where basic rate tax relief will be claimed by your pension provider", optional = true),
@@ -42,9 +42,9 @@ case object PensionSavings extends AnnualSummaryType {
   override val name: String = "pensionSaving"
   override val documentationName = "Pension Saving"
   override val example: JsValue = toJson(PensionSaving.example())
-  override val title: String = "Sample pension saving"
+  override val title: String = "Sample Pension Saving"
 
-  override def description(action: String): String = s"$action a pensionSavings"
+  override def description(action: String): String = s"$action pension savings"
 
   override val fieldDescriptions: Seq[FieldDescription] = Seq(
     PositiveMonetaryFieldDescription(name, "excessOfAnnualAllowance", "Pension contribution excess to annual allowance made by the taxpayer on which 'Pension Savings Charges' will be calculated", optional = true),

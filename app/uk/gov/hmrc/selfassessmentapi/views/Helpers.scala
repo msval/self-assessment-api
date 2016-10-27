@@ -47,6 +47,11 @@ object Helpers extends HalSupport with Links {
     prettyPrint(hal.json)
   }
 
+  def annualSummaryTypeResponse(utr: SaUtr, taxYear: TaxYear, annualSummaryType: AnnualSummaryType, annualSummaryExample: Option[JsValue]) = {
+    val hal = halResource(annualSummaryExample.getOrElse(obj()), Set(HalLink("self", annualSummaryTypeHref(utr, taxYear, annualSummaryType))))
+    prettyPrint(hal.json)
+  }
+
   def sourceLinkResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     sourceModelResponse(obj(), utr, taxYear, sourceType, sourceId)
   }

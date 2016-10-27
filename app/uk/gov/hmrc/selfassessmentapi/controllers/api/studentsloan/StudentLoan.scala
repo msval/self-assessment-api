@@ -47,7 +47,7 @@ case object StudentLoans extends AnnualSummaryType {
   override val documentationName = "Student Loan"
   override val example: JsValue = toJson(StudentLoan.example())
   override def description(action: String): String = s"$action a student loan"
-  override val title: String = "Sample student loan"
+  override val title: String = "Sample Student Loan"
   override val fieldDescriptions = Seq(
     PositiveMonetaryFieldDescription(name, "planType", "The plan type of taxpayer's Student Loan"),
     PositiveMonetaryFieldDescription(name, "deductedByEmployers", "Amount of Student Loan repayments deducted by taxpayer's employer", optional = true)

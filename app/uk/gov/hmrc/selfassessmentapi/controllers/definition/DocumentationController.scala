@@ -62,11 +62,6 @@ object Documentation extends BaseController with Links {
   private val utr = SaUtr("2234567890")
   private val taxYear = TaxYear("2016-17")
 
-  // FIXME: Update this documentation to account for the updated annual summaries (the code below no longer applies, hence it is commented out).
-  private lazy val updateTaxYearPropertiesPage = if (FeatureSwitchedAnnualSummaryTypes.atLeastOnePropertyIsEnabled) {
-    Seq.empty[EndpointDocumentation] //Seq(EndpointDocumentation("Update Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.updateAnnualSummaries(utr, taxYear)))
-  } else Seq.empty[EndpointDocumentation]
-
   private lazy val sourceAndSummaryDocumentation = Helpers.enabledSourceTypes.toSeq.flatMap { sourceType =>
     val updateEndpoint =  sourceType match  {
       case SourceTypes.Employments | SourceTypes.Benefits | SourceTypes.Banks | SourceTypes.Dividends =>  Nil
@@ -94,9 +89,16 @@ object Documentation extends BaseController with Links {
     }
   }
 
+  private lazy val annualSummaryDocumentation =  Helpers.enabledAnnualSummaryTypes.toSeq.flatMap { annualSummaryType =>
+    Seq(
+      EndpointDocumentation(s"Retrieve ${annualSummaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.readAnnualSummary(utr, taxYear, annualSummaryType)),
+      EndpointDocumentation(s"Create or Update ${annualSummaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.createAnnualSummary(utr, taxYear, annualSummaryType))
+    )
+  }
+
   private lazy val documentation =  Seq(EndpointDocumentation("Resolve Taxpayer", uk.gov.hmrc.selfassessmentapi.views.xml.resolveTaxpayer(utr)),
       EndpointDocumentation("Discover Tax Years", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYears(utr, taxYear)),
-      EndpointDocumentation("Discover Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYear(utr, taxYear))) ++ updateTaxYearPropertiesPage   ++ sourceAndSummaryDocumentation ++
+      EndpointDocumentation("Discover Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYear(utr, taxYear))) ++ annualSummaryDocumentation ++ sourceAndSummaryDocumentation ++
       Seq(EndpointDocumentation("Request Liability", uk.gov.hmrc.selfassessmentapi.views.xml.createLiability(utr, taxYear)),
       EndpointDocumentation("Retrieve Liability", uk.gov.hmrc.selfassessmentapi.views.xml.readLiability(utr, taxYear)))
 

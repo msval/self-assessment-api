@@ -25,26 +25,26 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoan
 import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOff
 import uk.gov.hmrc.selfassessmentapi.repositories.{AnnualSummaryRepositoryWrapper, SelfAssessmentRepository}
 
-case object ChildBenefitService$ extends AnnualSummaryService[ChildBenefit](ChildBenefit) {
+case object ChildBenefitService extends AnnualSummaryService[ChildBenefit](ChildBenefit) {
   override val repository = AnnualSummaryRepositoryWrapper(SelfAssessmentRepository().ChildBenefitsRepository)
 }
 
-case object TaxRefundedOrSetOffService$ extends AnnualSummaryService[TaxRefundedOrSetOff](TaxRefundedOrSetOff) {
+case object TaxRefundedOrSetOffService extends AnnualSummaryService[TaxRefundedOrSetOff](TaxRefundedOrSetOff) {
   override val repository = AnnualSummaryRepositoryWrapper(SelfAssessmentRepository().TaxRefundedOrSetOffRepository)
 }
 
-case object StudentLoanService$ extends AnnualSummaryService[StudentLoan](StudentLoan) {
+case object StudentLoanService extends AnnualSummaryService[StudentLoan](StudentLoan) {
   override val repository = AnnualSummaryRepositoryWrapper(SelfAssessmentRepository().StudentLoanRepository)
 }
 
-case object BlindPersonService$ extends AnnualSummaryService[BlindPerson](BlindPerson) {
+case object BlindPersonService extends AnnualSummaryService[BlindPerson](BlindPerson) {
   override val repository = AnnualSummaryRepositoryWrapper(SelfAssessmentRepository().BlindPersonRepository)
 }
 
-case object CharitableGivingService$ extends AnnualSummaryService[CharitableGiving](CharitableGiving) {
+case object CharitableGivingService extends AnnualSummaryService[CharitableGiving](CharitableGiving) {
   override val repository = AnnualSummaryRepositoryWrapper(SelfAssessmentRepository().CharitableGivingRepository)
 }
 
-case object PensionContributionService$ extends AnnualSummaryService[PensionContribution](PensionContribution) {
+case object PensionContributionService extends AnnualSummaryService[PensionContribution](PensionContribution) {
   override val repository = AnnualSummaryRepositoryWrapper(SelfAssessmentRepository().PensionContributionRepository)
 }

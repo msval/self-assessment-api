@@ -1,0 +1,23 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.controllers.api._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+
+@(saUtr: SaUtr, taxYear: TaxYear, annualSummaryType : AnnualSummaryType)
+
+<endpoint>
+    <name>Create or update @{annualSummaryType.documentationName}</name>
+    <description>This endpoint creates or updates a @{annualSummaryType.documentationName}</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource><![CDATA[PUT /self-assessment/{utr}/{tax-year}/@{annualSummaryType.name}]]></resource>
+    </section>
+    @partials.annualSummaryPathParams(saUtr, taxYear)
+    @partials.requestHeaders(true)
+    @partials.authorisation(true)
+    @partials.annualSummaryWriteRequest(saUtr, taxYear, annualSummaryType)
+    <section id="sample-response">
+        <title>Sample Response</title>
+        <httpStatus>201 (CREATED)</httpStatus>
+        <json>@annualSummaryTypeResponse(saUtr, taxYear, annualSummaryType, None)</json>
+    </section>
+</endpoint>

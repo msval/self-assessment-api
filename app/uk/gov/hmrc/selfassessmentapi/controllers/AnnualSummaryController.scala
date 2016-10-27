@@ -45,12 +45,12 @@ trait AnnualSummaryController extends BaseController with Links {
   }
 
   private def annualSummaryService(annualSummaryType: AnnualSummaryType): AnnualSummaryService[_] = annualSummaryType match {
-    case PensionContributions => PensionContributionService$
-    case CharitableGivings => CharitableGivingService$
-    case BlindPersons => BlindPersonService$
-    case StudentLoans => StudentLoanService$
-    case TaxRefundedOrSetOffs => TaxRefundedOrSetOffService$
-    case ChildBenefits => ChildBenefitService$
+    case PensionContributions => PensionContributionService
+    case CharitableGivings => CharitableGivingService
+    case BlindPersons => BlindPersonService
+    case StudentLoans => StudentLoanService
+    case TaxRefundedOrSetOffs => TaxRefundedOrSetOffService
+    case ChildBenefits => ChildBenefitService
   }
 
   def find(utr: SaUtr, taxYear: TaxYear, annualSummaryType: String) = Action.async {
