@@ -42,12 +42,12 @@ class FeatureSwitchedAnnualSummaryTypesSpec extends UnitSpec with MockitoSugar w
   }
 
   "types" should {
-    "return an empty sequence when all annual summaries are disabled" in {
+    "return an empty set when all annual summaries are disabled" in {
       when(mockFeatureSwitch.isEnabled(any[AnnualSummaryType]())).thenReturn(false)
-      TestFeatureSwitchedAnnualSummaryTypes.types shouldBe Seq.empty[AnnualSummaryType]
+      TestFeatureSwitchedAnnualSummaryTypes.types shouldBe Set()
     }
 
-    "return a sequence containing only enabled annual summaries" in {
+    "return a set containing only enabled annual summaries" in {
       when(mockFeatureSwitch.isEnabled(PensionContributions)).thenReturn(false)
       when(mockFeatureSwitch.isEnabled(CharitableGivings)).thenReturn(false)
       when(mockFeatureSwitch.isEnabled(BlindPersons)).thenReturn(true)
@@ -55,7 +55,7 @@ class FeatureSwitchedAnnualSummaryTypesSpec extends UnitSpec with MockitoSugar w
       when(mockFeatureSwitch.isEnabled(TaxRefundedOrSetOffs)).thenReturn(false)
       when(mockFeatureSwitch.isEnabled(ChildBenefits)).thenReturn(false)
 
-      TestFeatureSwitchedAnnualSummaryTypes.types shouldBe Seq(BlindPersons, StudentLoans)
+      TestFeatureSwitchedAnnualSummaryTypes.types shouldBe Set(BlindPersons, StudentLoans)
     }
 
     "return a sequence containing all annual summaries when all are enabled" in {
