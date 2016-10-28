@@ -19,7 +19,6 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{JsonMarshaller, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.controllers.controllers.validate
 import uk.gov.hmrc.selfassessmentapi.repositories.AnnualSummaryRepository
 
 import scala.concurrent.Future
@@ -33,7 +32,6 @@ abstract class AnnualSummaryService[T](marshaller: JsonMarshaller[T]) {
   def find(utr: SaUtr, taxYear: TaxYear): Future[Option[JsValue]] = repository.find(utr, taxYear).map(_.map(Json.toJson(_)))
 
   def createOrUpdate(utr: SaUtr, taxYear: TaxYear, value: JsValue): Either[ErrorResult, Future[Boolean]] = {
-    // FIXME: Move validation to controller.
     validate[T, Boolean](value) {
       repository.createOrUpdate(utr, taxYear, _)
     }

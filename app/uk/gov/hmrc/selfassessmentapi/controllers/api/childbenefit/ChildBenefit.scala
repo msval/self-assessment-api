@@ -36,5 +36,5 @@ object ChildBenefit extends JsonMarshaller[ChildBenefit] {
   )(ChildBenefit.apply _).filter(ValidationError("If the amount is greater than 0, the numberOfChildren must also be greater than 0", VALUE_BELOW_MINIMUM))
    {benefit => if (benefit.amount > 0) benefit.numberOfChildren > 0 else true}
 
-  override def example(id: Option[String]): ChildBenefit = ChildBenefit(1234.34, 3, Some(new LocalDate(2016, 4, 5)))
+  override def example(id: Option[String]): ChildBenefit = ChildBenefit(1234.34, 3, Some(new LocalDate(2016, 4, 10)))
 }

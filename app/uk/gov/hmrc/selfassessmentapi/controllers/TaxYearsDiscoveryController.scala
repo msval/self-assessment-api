@@ -36,5 +36,5 @@ trait TaxYearsDiscoveryController
      Future.successful(Ok(halResource(JsObject(Nil), links)))
     }
 
-  private def taxYearHref(utr: SaUtr, taxYear: TaxYear) = s"/$utr/$taxYear"
+  private def taxYearHref(utr: SaUtr, taxYear: TaxYear) = s"$context/$utr/$taxYear"
 }

@@ -21,18 +21,7 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{
-BSONBoolean,
-BSONDateTime,
-BSONDocument,
-BSONDouble,
-BSONElement,
-BSONInteger,
-BSONNull,
-BSONObjectID,
-BSONString,
-Producer
-}
+import reactivemongo.bson.{BSONBoolean, BSONDateTime, BSONDocument, BSONDouble, BSONElement, BSONInteger, BSONNull, BSONObjectID, BSONString, BSONValue, Producer}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
@@ -126,13 +115,13 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
 
     override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, childBenefit: ChildBenefit): Future[Boolean] = {
       val bsonDoc = BSONDocument(
-        Seq(
+        lastModifiedDateTimeModfier(DateTime.now(DateTimeZone.UTC)),
           "childBenefit" -> BSONDocument(
             Seq("amount" -> BSONDouble(childBenefit.amount.doubleValue()),
               "numberOfChildren" -> BSONInteger(childBenefit.numberOfChildren),
               "dateBenefitStopped" -> childBenefit.dateBenefitStopped
                 .map(x => BSONString(x.toString))
-                .getOrElse(BSONNull)))))
+                .getOrElse(BSONNull))))
 
       self.updateAnnualSummary(saUtr, taxYear, bsonDoc)
     }
@@ -143,9 +132,10 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
       self.findBy(saUtr, taxYear).map(_.flatMap(_.taxRefundedOrSetOff))
 
     override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, taxRefundedOrSetOff: TaxRefundedOrSetOff): Future[Boolean] = {
-      val bsonDoc = BSONDocument(Seq(
+      val bsonDoc = BSONDocument(
+        lastModifiedDateTimeModfier(DateTime.now(DateTimeZone.UTC)),
         "taxRefundedOrSetOff" -> BSONDocument(Seq(
-          "amount" -> BSONDouble(taxRefundedOrSetOff.amount.doubleValue())))))
+          "amount" -> BSONDouble(taxRefundedOrSetOff.amount.doubleValue()))))
 
       self.updateAnnualSummary(saUtr, taxYear, bsonDoc)
     }
@@ -156,11 +146,12 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
       self.findBy(saUtr, taxYear).map(_.flatMap(_.studentLoan))
 
     override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, loan: StudentLoan): Future[Boolean] = {
-      val bsonDoc = BSONDocument(Seq(
+      val bsonDoc = BSONDocument(
+        lastModifiedDateTimeModfier(DateTime.now(DateTimeZone.UTC)),
         "studentLoan" -> BSONDocument(Seq(
           "planType" -> BSONString(loan.planType.toString),
           "deductedByEmployers" -> loan.deductedByEmployers.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
-        ))))
+        )))
 
       self.updateAnnualSummary(saUtr, taxYear, bsonDoc)
     }
@@ -171,12 +162,13 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
       self.findBy(saUtr, taxYear).map(_.flatMap(_.blindPerson))
 
     override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, blindPerson: BlindPerson): Future[Boolean] = {
-      val bsonDoc = BSONDocument(Seq(
+      val bsonDoc = BSONDocument(
+        lastModifiedDateTimeModfier(DateTime.now(DateTimeZone.UTC)),
         "blindPerson" -> BSONDocument(Seq(
           "country" -> blindPerson.country.map(x => BSONString(x.toString)).getOrElse(BSONNull),
           "registrationAuthority" -> blindPerson.registrationAuthority.map(BSONString).getOrElse(BSONNull),
           "spouseSurplusAllowance" -> blindPerson.spouseSurplusAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-          "wantSpouseToUseSurplusAllowance" -> blindPerson.wantSpouseToUseSurplusAllowance.map(BSONBoolean).getOrElse(BSONNull)))))
+          "wantSpouseToUseSurplusAllowance" -> blindPerson.wantSpouseToUseSurplusAllowance.map(BSONBoolean).getOrElse(BSONNull))))
 
       self.updateAnnualSummary(saUtr, taxYear, bsonDoc)
     }
@@ -187,7 +179,8 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
       self.findBy(saUtr, taxYear).map(_.flatMap(_.charitableGiving))
 
     override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, charitableGiving: CharitableGiving): Future[Boolean] = {
-      val bsonDoc = BSONDocument(Seq(
+      val bsonDoc = BSONDocument(
+        lastModifiedDateTimeModfier(DateTime.now(DateTimeZone.UTC)),
         "charitableGiving" -> BSONDocument(Seq(
           "giftAidPayments" -> charitableGiving.giftAidPayments.map(giftAid =>
             BSONDocument(Seq(
@@ -206,7 +199,7 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
             BSONDocument(Seq(
               "totalInTaxYear" -> BSONDouble(landProperties.totalInTaxYear.doubleValue()),
               "toNonUkCharities" -> landProperties.toNonUkCharities.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
-            ))).getOrElse(BSONNull)))))
+            ))).getOrElse(BSONNull))))
 
       self.updateAnnualSummary(saUtr, taxYear, bsonDoc)
     }
@@ -217,7 +210,8 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
       self.findBy(saUtr, taxYear).map(_.flatMap(_.pensionContribution))
 
     override def createOrUpdate(saUtr: SaUtr, taxYear: TaxYear, pensionContribution: PensionContribution): Future[Boolean] = {
-      val bsonDoc = BSONDocument(Seq(
+      val bsonDoc = BSONDocument(
+        lastModifiedDateTimeModfier(DateTime.now(DateTimeZone.UTC)),
         "pensionContribution" -> BSONDocument(
           Seq(
             "ukRegisteredPension" -> pensionContribution.ukRegisteredPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
@@ -228,7 +222,7 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
               "excessOfAnnualAllowance" -> pensionContribution.pensionSavings.map(_.excessOfAnnualAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull),
               "taxPaidByPensionScheme" -> pensionContribution.pensionSavings.map(_.taxPaidByPensionScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull)
             ))
-      ))))
+      )))
 
       self.updateAnnualSummary(saUtr, taxYear, bsonDoc)
     }

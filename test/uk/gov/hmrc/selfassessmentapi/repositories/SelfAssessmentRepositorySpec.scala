@@ -16,12 +16,17 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, LocalDate}
 import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPerson
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGiving
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefit
 import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.{PensionContribution, PensionSaving}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoan
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOff
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfAssessment
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -136,17 +141,74 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   }
 
   "find annual summary" should {
-    "return an annual summary matching utr and tax year" in {
-      val pensionContributions = PensionContribution(ukRegisteredPension = Some(10000.00))
+    "return an pension contribution matching utr and tax year" in {
+      val pensionContributions = PensionContribution.example()
       await(mongoRepository.PensionContributionRepository.createOrUpdate(saUtr, taxYear, pensionContributions))
       val records = await(mongoRepository.PensionContributionRepository.find(saUtr, taxYear))
       records.size shouldBe 1
       records shouldEqual Some(pensionContributions)
     }
+
+    "return a charitable giving matching utr and tax year" in {
+      val charitableGiving = CharitableGiving.example()
+      await(mongoRepository.CharitableGivingRepository.createOrUpdate(saUtr, taxYear, charitableGiving))
+      val records = await(mongoRepository.CharitableGivingRepository.find(saUtr, taxYear))
+      records.size shouldBe 1
+      records shouldEqual Some(charitableGiving)
+    }
+
+    "return a blind person matching utr and tax year" in {
+      val blindPerson = BlindPerson.example()
+      await(mongoRepository.BlindPersonRepository.createOrUpdate(saUtr, taxYear, blindPerson))
+      val records = await(mongoRepository.BlindPersonRepository.find(saUtr, taxYear))
+      records.size shouldBe 1
+      records shouldEqual Some(blindPerson)
+    }
+
+    "return a student loan matching utr and tax year" in {
+      val studentLoan = StudentLoan.example()
+      await(mongoRepository.StudentLoanRepository.createOrUpdate(saUtr, taxYear, studentLoan))
+      val records = await(mongoRepository.StudentLoanRepository.find(saUtr, taxYear))
+      records.size shouldBe 1
+      records shouldEqual Some(studentLoan)
+    }
+
+    "return a tax refunded or set off matching utr and tax year" in {
+      val taxRefundedOrSetOff = TaxRefundedOrSetOff.example()
+      await(mongoRepository.TaxRefundedOrSetOffRepository.createOrUpdate(saUtr, taxYear, taxRefundedOrSetOff))
+      val records = await(mongoRepository.TaxRefundedOrSetOffRepository.find(saUtr, taxYear))
+      records.size shouldBe 1
+      records shouldEqual Some(taxRefundedOrSetOff)
+    }
+
+    "return a child benefit matching utr and tax year" in {
+      val childBenefit = ChildBenefit.example()
+      await(mongoRepository.ChildBenefitsRepository.createOrUpdate(saUtr, taxYear, childBenefit))
+      val records = await(mongoRepository.ChildBenefitsRepository.find(saUtr, taxYear))
+      records.size shouldBe 1
+      records shouldEqual Some(childBenefit)
+    }
+
+    "return a combination of annual summaries" in {
+      val childBenefit = ChildBenefit.example()
+      val blindPerson = BlindPerson.example()
+      val pensionContribution = PensionContribution.example()
+
+      await(mongoRepository.ChildBenefitsRepository.createOrUpdate(saUtr, taxYear, childBenefit))
+      await(mongoRepository.BlindPersonRepository.createOrUpdate(saUtr, taxYear, blindPerson))
+      await(mongoRepository.PensionContributionRepository.createOrUpdate(saUtr, taxYear, pensionContribution))
+
+      val records = await(mongoRepository.findBy(saUtr, taxYear))
+
+      records.isDefined shouldBe true
+      records.get.childBenefit shouldBe Some(childBenefit)
+      records.get.blindPerson shouldBe Some(blindPerson)
+      records.get.pensionContribution shouldBe Some(pensionContribution)
+    }
   }
 
   "create or update" should {
-    "create update the annual summary matching utr and tax year" in {
+    "update the pension contribution matching utr and tax year" in {
       val pensionContributions = PensionContribution(ukRegisteredPension = Some(10000.00))
       await(mongoRepository.PensionContributionRepository.createOrUpdate(saUtr, taxYear, pensionContributions))
       val pensionContributions2 = PensionContribution(ukRegisteredPension = Some(50000.00),
@@ -156,6 +218,61 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
       val records = await(mongoRepository.PensionContributionRepository.find(saUtr, taxYear))
       records shouldEqual Some(pensionContributions2)
+    }
+
+    "update the charitable giving matching utr and tax year" in {
+      val charitableGiving = CharitableGiving.example().copy(landProperties = None)
+      await(mongoRepository.CharitableGivingRepository.createOrUpdate(saUtr, taxYear, charitableGiving))
+      val charitableGiving2 = CharitableGiving.example()
+
+      await(mongoRepository.CharitableGivingRepository.createOrUpdate(saUtr, taxYear, charitableGiving2))
+
+      val records = await(mongoRepository.CharitableGivingRepository.find(saUtr, taxYear))
+      records shouldEqual Some(charitableGiving2)
+    }
+
+    "update the blind person matching utr and tax year" in {
+      val blindPerson = BlindPerson.example().copy(wantSpouseToUseSurplusAllowance = None)
+      await(mongoRepository.BlindPersonRepository.createOrUpdate(saUtr, taxYear, blindPerson))
+      val blindPerson2 = BlindPerson.example()
+
+      await(mongoRepository.BlindPersonRepository.createOrUpdate(saUtr, taxYear, blindPerson2))
+
+      val records = await(mongoRepository.BlindPersonRepository.find(saUtr, taxYear))
+      records shouldEqual Some(blindPerson2)
+    }
+
+    "update the student loan matching utr and tax year" in {
+      val studentLoan = StudentLoan.example().copy(deductedByEmployers = None)
+      await(mongoRepository.StudentLoanRepository.createOrUpdate(saUtr, taxYear, studentLoan))
+      val studentLoan2 = StudentLoan.example()
+
+      await(mongoRepository.StudentLoanRepository.createOrUpdate(saUtr, taxYear, studentLoan2))
+
+      val records = await(mongoRepository.StudentLoanRepository.find(saUtr, taxYear))
+      records shouldEqual Some(studentLoan2)
+    }
+
+    "update the tax refunded or set off matching utr and tax year" in {
+      val taxRefundedOrSetOff = TaxRefundedOrSetOff(amount = 50)
+      await(mongoRepository.TaxRefundedOrSetOffRepository.createOrUpdate(saUtr, taxYear, taxRefundedOrSetOff))
+      val taxRefundedOrSetOff2 = TaxRefundedOrSetOff(amount = 500.25)
+
+      await(mongoRepository.TaxRefundedOrSetOffRepository.createOrUpdate(saUtr, taxYear, taxRefundedOrSetOff2))
+
+      val records = await(mongoRepository.TaxRefundedOrSetOffRepository.find(saUtr, taxYear))
+      records shouldEqual Some(taxRefundedOrSetOff2)
+    }
+
+    "update the child benefit matching utr and tax year" in {
+      val childBenefit = ChildBenefit.example().copy(dateBenefitStopped = None)
+      await(mongoRepository.ChildBenefitsRepository.createOrUpdate(saUtr, taxYear, childBenefit))
+      val childbenefit2 = ChildBenefit.example().copy(dateBenefitStopped = Some(LocalDate.now()))
+
+      await(mongoRepository.ChildBenefitsRepository.createOrUpdate(saUtr, taxYear, childbenefit2))
+
+      val records = await(mongoRepository.ChildBenefitsRepository.find(saUtr, taxYear))
+      records shouldEqual Some(childbenefit2)
     }
   }
 

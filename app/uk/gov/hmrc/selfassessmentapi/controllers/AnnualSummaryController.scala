@@ -41,7 +41,7 @@ trait AnnualSummaryController extends BaseController with Links {
   private def service(annualSummaryType: String): AnnualSummaryService[_] = {
     val summaryType = FeatureSwitchedAnnualSummaryTypes.types.find(_.name == annualSummaryType)
     val service = summaryType.map(annualSummaryService)
-    service.getOrElse(throw UnknownAnnualSummaryException(annualSummaryType))
+    service.getOrElse(NotFoundAnnualSummaryService)
   }
 
   private def annualSummaryService(annualSummaryType: AnnualSummaryType): AnnualSummaryService[_] = annualSummaryType match {
@@ -75,5 +75,3 @@ trait AnnualSummaryController extends BaseController with Links {
     }
   }
 }
-
-case class UnknownAnnualSummaryException(annualSummaryType: String) extends RuntimeException(s"annual summary: $annualSummaryType doesn't exist")

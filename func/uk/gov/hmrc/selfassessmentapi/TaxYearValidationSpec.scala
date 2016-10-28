@@ -19,19 +19,17 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
       val payload = Json.parse(
         s"""
            |{
-           |   "childBenefit": {
-           |    "amount": 1234.34,
-           |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
-           |  }
-           | }
+           |  "amount": 1234.34,
+           |  "numberOfChildren": 3,
+           |  "dateBenefitStopped": "2016-04-05"
+           |}
         """.stripMargin)
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/$saUtr/$taxYear/childBenefit", Some(payload))
         .thenAssertThat()
-        .isValidationError("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
+        .isValidationError("/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
     }
   }
 
@@ -40,19 +38,17 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
       val payload = Json.parse(
         s"""
            |{
-           |   "childBenefit": {
-           |    "amount": 1234.34,
-           |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2017-04-06"
-           |  }
-           | }
+           |  "amount": 1234.34,
+           |  "numberOfChildren": 3,
+           |  "dateBenefitStopped": "2017-04-06"
+           |}
         """.stripMargin)
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/$saUtr/$taxYear/childBenefit", Some(payload))
         .thenAssertThat()
-        .isValidationError("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
+        .isValidationError("/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
     }
   }
 
@@ -62,17 +58,15 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
       val payload = Json.parse(
         s"""
            |{
-           |   "childBenefit": {
-           |    "amount": 1234.34,
-           |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
-           |  }
-           | }
+           |  "amount": 1234.34,
+           |  "numberOfChildren": 3,
+           |  "dateBenefitStopped": "2016-04-05"
+           |}
         """.stripMargin)
       when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/$saUtr/$taxYear/childBenefit", Some(payload))
         .thenAssertThat()
-        .isValidationError("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
+        .isValidationError("/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
     }
   }
 
@@ -81,17 +75,15 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
       val payload = Json.parse(
         s"""
            |{
-           |   "childBenefit": {
-           |    "amount": 1234.34,
-           |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2017-04-06"
-           |  }
-           | }
+           |  "amount": 1234.34,
+           |  "numberOfChildren": 3,
+           |  "dateBenefitStopped": "2017-04-06"
+           |}
         """.stripMargin)
       when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/$saUtr/$taxYear/childBenefit", Some(payload))
         .thenAssertThat()
-        .isValidationError("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
+        .isValidationError("/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
     }
   }
 
@@ -126,66 +118,6 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .get(s"/$saUtr/not-a-tax-year").withAcceptHeader()
         .thenAssertThat()
         .isBadRequest("TAX_YEAR_INVALID")
-    }
-  }
-
-  "update tax year properties" should {
-    "return 400 and validation error if payload does not contain only Pension Contributions for a live request" ignore {
-      val payload = Json.parse(
-        s"""
-           |
-           | {
-           |   "pensionContribution": {
-           | 		"ukRegisteredPension": 1000.45,
-           | 		"retirementAnnuity": 1000.0,
-           | 		"employerScheme": 12000.05,
-           | 		"overseasPension": 1234.43
-           | 	 },
-           |   "childBenefit": {
-           |    "amount": 1234.34,
-           |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2017-04-06"
-           |   }
-           |}
-        """.stripMargin)
-      given()
-        .userIsAuthorisedForTheResource(saUtr)
-        .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
-        .thenAssertThat()
-        .isValidationError("/taxYearProperties", "ONLY_PENSION_CONTRIBUTIONS_SUPPORTED")
-    }
-  }
-
-
-  "if the live request is valid it" should {
-    "update and retrieve the pension contributions tax year properties" ignore {
-
-      val payload, expectedJson = Json.parse(
-        s"""
-           |{
-           | 	"pensionContribution": {
-           | 		"ukRegisteredPension": 1000.45,
-           | 		"retirementAnnuity": 1000.0,
-           | 		"employerScheme": 12000.05,
-           | 		"overseasPension": 1234.43
-           | 	}
-           |}
-        """.stripMargin)
-
-      given()
-        .userIsAuthorisedForTheResource(saUtr)
-        .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
-        .thenAssertThat()
-        .statusIs(200)
-      when()
-        .get(s"/$saUtr/$taxYear").withAcceptHeader()
-        .thenAssertThat()
-        .statusIs(200)
-        .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
-        .bodyIs(expectedJson)
     }
   }
 }

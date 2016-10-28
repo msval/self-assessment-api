@@ -22,20 +22,20 @@ class AnnualSummaryControllerSpec extends BaseFunctionalSpec {
     "Test.feature-switch.blindPerson.enabled" -> true))
 
   private val summaryTypes = AnnualSummaryType.types
-  val invalidSummaryTypes = Seq("hello", "world", "cow", "says", "moo")
+  private val invalidSummaryTypes = Seq("hello", "world", "cow", "says", "moo")
 
   private val invalidJson =
     """
       |{
-      |"snake": 555555
+      |  "snake": 555555
       |}
     """.stripMargin
 
-  private val emptyJson = "{}"
-
   "find" should {
+
     summaryTypes.foreach { summaryType =>
       s"return code 200 when an annual summary exists for ${summaryType.name}" in {
+        val saUtr = generateSaUtr()
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -63,7 +63,7 @@ class AnnualSummaryControllerSpec extends BaseFunctionalSpec {
 
   "createOrUpdate" should {
     summaryTypes.foreach { summaryType =>
-      s"return code 201 when provided with a valid JSON for an annual summary that exists for ${summaryType.name}" in {
+      s"return code 201 when provided with a JSON for an annual summary that exists for ${summaryType.name}" in {
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -71,30 +71,6 @@ class AnnualSummaryControllerSpec extends BaseFunctionalSpec {
           .thenAssertThat()
           .statusIs(201)
           .contentTypeIsHalJson()
-      }
-
-      s"return code 400 when provided with an invalid JSON for an annual summary that exists for ${summaryType.name}" in {
-        given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .put(s"/$saUtr/$taxYear/${summaryType.name}", Some(Json.parse(invalidJson)))
-          .thenAssertThat()
-          .statusIs(400)
-      }
-
-      s"overwrite an existing annual summary for ${summaryType.name}" in {
-        given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .put(s"/$saUtr/$taxYear/${summaryType.name}", Some(summaryType.example))
-          .thenAssertThat()
-          .statusIs(201)
-          .when()
-          .put(s"/$saUtr/$taxYear/${summaryType.name}", Some(Json.parse(emptyJson)))
-          .thenAssertThat()
-          .statusIs(201)
-          .contentTypeIsHalJson()
-          .bodyIsLike("{}")
       }
     }
 
@@ -117,50 +93,62 @@ class AnnualSummaryControllerSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear/charitableGiving", Some(CharitableGivings.example))
         .thenAssertThat()
         .statusIs(201)
+        .contentTypeIsHalJson()
         .when()
         .put(s"/$saUtr/$taxYear/studentLoan", Some(StudentLoans.example))
         .thenAssertThat()
         .statusIs(201)
+        .contentTypeIsHalJson()
         .when()
         .put(s"/$saUtr/$taxYear/blindPerson", Some(BlindPersons.example))
         .thenAssertThat()
         .statusIs(201)
+        .contentTypeIsHalJson()
         .when()
         .put(s"/$saUtr/$taxYear/pensionContribution", Some(PensionContributions.example))
         .thenAssertThat()
         .statusIs(201)
+        .contentTypeIsHalJson()
         .when()
         .put(s"/$saUtr/$taxYear/childBenefit", Some(ChildBenefits.example))
         .thenAssertThat()
         .statusIs(201)
+        .contentTypeIsHalJson()
         .when()
         .put(s"/$saUtr/$taxYear/taxRefundedOrSetOff", Some(TaxRefundedOrSetOffs.example))
         .thenAssertThat()
         .statusIs(201)
+        .contentTypeIsHalJson()
         .when()
         .get(s"/$saUtr/$taxYear/charitableGiving")
         .thenAssertThat()
         .statusIs(200)
+        .contentTypeIsHalJson()
         .when()
         .get(s"/$saUtr/$taxYear/studentLoan")
         .thenAssertThat()
         .statusIs(200)
+        .contentTypeIsHalJson()
         .when()
         .get(s"/$saUtr/$taxYear/pensionContribution")
         .thenAssertThat()
         .statusIs(200)
+        .contentTypeIsHalJson()
         .when()
         .get(s"/$saUtr/$taxYear/blindPerson")
         .thenAssertThat()
         .statusIs(200)
+        .contentTypeIsHalJson()
         .when()
         .get(s"/$saUtr/$taxYear/taxRefundedOrSetOff")
         .thenAssertThat()
         .statusIs(200)
+        .contentTypeIsHalJson()
         .when()
         .get(s"/$saUtr/$taxYear/childBenefit")
         .thenAssertThat()
         .statusIs(200)
+        .contentTypeIsHalJson()
     }
   }
 }
