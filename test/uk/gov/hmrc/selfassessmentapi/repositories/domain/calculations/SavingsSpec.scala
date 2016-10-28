@@ -385,10 +385,10 @@ class SavingsSpec extends UnitSpec {
          additionalHigherRateAmount: String) =>
           val bandAllocations = Savings.IncomeTaxBandSummary(
             SelfAssessmentBuilder()
-              .withSavings(BankBuilder().withUntaxedInterest(totalSavingsIncome.toInt))
-              .withSelfEmployments(SelfEmploymentBuilder().withTurnover(totalProfitFromSelfEmployments.toInt))
+              .withSavings(BankBuilder().withUntaxedInterest(BigDecimal(totalSavingsIncome)))
+              .withSelfEmployments(SelfEmploymentBuilder().withTurnover(BigDecimal(totalProfitFromSelfEmployments)))
               .withPensionContributions()
-              .ukRegisteredPension(500)
+              .ukRegisteredPension(BigDecimal(ukPensionContributions))
               .create())
 
           println(bandAllocations)
