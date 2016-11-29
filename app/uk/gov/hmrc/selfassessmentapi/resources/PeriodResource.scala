@@ -38,7 +38,7 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
 
   private lazy val featureSwitch = FeatureSwitchAction(sourceType, "periods")
 
-  def createPeriod(nino: Nino, id: ID): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def createPeriod(nino: Nino, id: ID) = featureSwitch.asyncFeatureSwitch { request =>
     validate[P, Either[Error, PeriodId]](request.body) { period =>
       service.createPeriod(nino, id, period)
     } match {

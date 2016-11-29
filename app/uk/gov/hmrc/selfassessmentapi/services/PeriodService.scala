@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]] {
 
-  val periodRepository : PeriodRepository[ID, P, PC]
+  val periodRepository : NewSourceRepository[ID, P, PC]
 
   def createPeriod(nino: Nino, id: ID, period: P): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
@@ -47,7 +47,7 @@ abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodCon
           case true => Future.successful(Right(periodId))
           case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
         }
-      case None => Future.successful(Left(Error(NOT_FOUND.toString, s"Self-employment not found for id: $id", "")))
+      case None => Future.successful(Left(Error(NOT_FOUND.toString, s"Resource not found for id: $id", "")))
     }
   }
 

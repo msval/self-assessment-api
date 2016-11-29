@@ -20,20 +20,20 @@ import play.api.libs.json.Format
 import reactivemongo.api.DB
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
+import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.PeriodContainer
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods.Period
 
 import scala.concurrent.Future
 
-abstract class PeriodRepository[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]]
+abstract class NewSourceRepository[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]]
   (repoName: String, domainFormat: Format[PC])(implicit mongo: () => DB, manifest: Manifest[PC])
   extends ReactiveRepository[PC, BSONObjectID](
   repoName,
   mongo,
   domainFormat,
-  idFormat = ReactiveMongoFormats.objectIdFormats) with AtomicUpdate[PC] {
+  idFormat = ReactiveMongoFormats.objectIdFormats) {
 
   def retrieve(id: ID, nino: Nino): Future[Option[PC]]
   def update(id: ID, nino: Nino, periodContainer: PC): Future[Boolean]

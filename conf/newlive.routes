@@ -1,3 +1,6 @@
+####################
+# Self-Employments #
+####################
 GET /ni/:nino/self-employments   uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.retrieveAll(nino: uk.gov.hmrc.domain.Nino)
 POST /ni/:nino/self-employments   uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.create(nino: uk.gov.hmrc.domain.Nino)
 PUT /ni/:nino/self-employments/:id   uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.update(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId)
@@ -13,6 +16,13 @@ GET /ni/:nino/self-employments/:id/periods/:periodId    uk.gov.hmrc.selfassessme
 PUT /ni/:nino/self-employments/:id/:taxYear    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)
 GET /ni/:nino/self-employments/:id/:taxYear    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)
 
-# Liability Calculation
+####################
+# Property Periods #
+####################
+POST /ni/:nino/uk-properties/:id/periods   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.createPeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.controllers.api.Location)
+
+#########################
+# Liability Calculation #
+#########################
 POST    /ni/:nino/liability/:taxYear   uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.requestLiability(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)
 GET     /ni/:nino/liability/:taxYear   uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.retrieveLiability(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)
