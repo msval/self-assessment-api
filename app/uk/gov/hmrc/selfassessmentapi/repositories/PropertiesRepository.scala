@@ -41,7 +41,7 @@ class PropertiesRepository(implicit mongo: () => DB)
     Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("properties_lastmodified"), unique = false)
   )
 
-  def create(properties: Properties) = insert(properties)
+  def create(properties: Properties): Future[Boolean] = insert(properties).map(_.ok)
 
   override def retrieve(location: Location, nino: Nino): Future[Option[Properties]] = {
     find("nino" -> nino.nino, "location" -> location).map(_.headOption)

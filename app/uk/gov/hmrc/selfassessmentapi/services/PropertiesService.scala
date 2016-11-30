@@ -37,11 +37,10 @@ class PropertiesService extends PeriodService[Location, PropertiesPeriod, Proper
   }
 
   override def createPeriod(nino: Nino, location: Location, period: PropertiesPeriod): Future[Either[Error, PeriodId]] = {
-    periodRepository.retrieve(location, nino).map {
-      case None => create(nino, location)
-      case _ =>
-    }.flatMap { _ =>
-      super.createPeriod(nino, location, period)
+    periodRepository.retrieve(location, nino).flatMap { opt =>
+      if (opt.isEmpty) create(nino, location) else Future.successful(true)
+    }.flatMap { successful =>
+      if (successful) super.createPeriod(nino, location, period) else throw new RuntimeException("Could not persist Properties to the database. Is the database available?")
     }
   }
 }
