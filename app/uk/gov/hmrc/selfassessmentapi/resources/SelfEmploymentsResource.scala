@@ -21,24 +21,24 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, GenericErrorResult, ValidationErrorResult}
+import uk.gov.hmrc.selfassessmentapi.controllers.{GenericErrorResult, ValidationErrorResult}
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
-import uk.gov.hmrc.selfassessmentapi.resources.models.SelfEmploymentAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAnnualSummary, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.domain
+import uk.gov.hmrc.selfassessmentapi.resources.SourceType.SourceType
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
-object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] with BaseController {
+object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] with BaseResource {
 
   override val context: PeriodId = AppContext.apiGatewayLinkContext
 
   override val service = SelfEmploymentsService()
-  override val sourceType: SourceType = SourceTypes.SelfEmployments
-  private val seFeatureSwitch = FeatureSwitchAction(SourceTypes.SelfEmployments)
-  private val seAnnualFeatureSwitch = FeatureSwitchAction(SourceTypes.SelfEmployments, "annual")
+  override val sourceType: SourceType = SourceType.SelfEmployments
+  private val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
+  private val seAnnualFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
 
   def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
     validate[models.SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>

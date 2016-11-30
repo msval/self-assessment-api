@@ -19,9 +19,9 @@ package uk.gov.hmrc.selfassessmentapi.resources.models
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, JsonSpec}
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain
+import uk.gov.hmrc.selfassessmentapi.resources.{ErrorCode, JsonSpec}
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
 
 class SelfEmploymentSpec extends JsonSpec {

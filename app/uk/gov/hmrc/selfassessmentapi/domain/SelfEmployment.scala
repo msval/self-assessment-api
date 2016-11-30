@@ -21,7 +21,6 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{PeriodId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.resources._
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
 import uk.gov.hmrc.selfassessmentapi.resources.models._

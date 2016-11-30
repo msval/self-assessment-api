@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
-import com.github.nscala_time.time.OrderingImplicits
-import org.joda.time.LocalDate
-import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.resources.PeriodId
+import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.domain.{SimpleName, SimpleObjectReads, SimpleObjectWrites}
 
-case class PeriodSummary(periodId: PeriodId, from: LocalDate, to: LocalDate) extends Period
+case class TaxYear(taxYear: String) extends SimpleName {
 
-object PeriodSummary {
-  private implicit val localDateOrdering = OrderingImplicits.LocalDateOrdering
+  override def toString = taxYear
+  def value = taxYear
+  val name = "taxYear"
+}
 
-  implicit val ordering: Ordering[PeriodSummary] = Ordering.by(_.from)
-  implicit val writes = Json.writes[PeriodSummary]
+object TaxYear extends (String => TaxYear) {
+  implicit val taxYearWrite: Writes[TaxYear] = new SimpleObjectWrites[TaxYear](_.value)
+  implicit val taxYearRead: Reads[TaxYear] = new SimpleObjectReads[TaxYear]("taxYear", TaxYear.apply)
 }

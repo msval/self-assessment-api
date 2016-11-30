@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
 
 class BindersSpec extends UnitSpec {
 
@@ -66,8 +65,8 @@ class BindersSpec extends UnitSpec {
     implicit val pathBindable = PathBindable.bindableString
 
     "return Right with a Source Type instance for a self-employments" in {
-      SourceTypes.types.foreach { `type` =>
-        val result = Binders.sourceTypeBinder.bind("sourceType", `type`.name)
+      SourceType.values.foreach { `type` =>
+        val result = Binders.sourceTypeBinder.bind("sourceType", `type`.toString)
         result shouldEqual Right(`type`)
       }
     }

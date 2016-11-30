@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources
 
-import com.github.nscala_time.time.OrderingImplicits
-import org.joda.time.LocalDate
-import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.resources.PeriodId
+sealed trait ErrorResult
 
-case class PeriodSummary(periodId: PeriodId, from: LocalDate, to: LocalDate) extends Period
+case class GenericErrorResult(message: String) extends ErrorResult
 
-object PeriodSummary {
-  private implicit val localDateOrdering = OrderingImplicits.LocalDateOrdering
-
-  implicit val ordering: Ordering[PeriodSummary] = Ordering.by(_.from)
-  implicit val writes = Json.writes[PeriodSummary]
-}
+case class ValidationErrorResult(validationErrors: ValidationErrors) extends ErrorResult

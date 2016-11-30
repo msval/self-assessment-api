@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.SourceType.SourceType
+import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
 
 object Binders {
 
@@ -47,12 +48,25 @@ object Binders {
     }
   }
 
+  implicit def apiTaxYearBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear] {
+
+    def unbind(key: String, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear): String = stringBinder.unbind(key, taxYear.value)
+
+    def bind(key: String, value: String): Either[String, uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear] = {
+      AppContext.supportedTaxYears.contains(value) match {
+        case true => Right(uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear(value))
+        case false => Left("ERROR_TAX_YEAR_INVALID")
+      }
+    }
+  }
+
+
   implicit def sourceTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SourceType] {
 
-    def unbind(key: String, `type`: SourceType): String = `type`.name
+    def unbind(key: String, `type`: SourceType): String = `type`.toString
 
     def bind(key: String, value: String): Either[String, SourceType] = {
-      SourceTypes.fromName(value.toLowerCase) match {
+      SourceType.values.find(sourceType =>  value.equals(sourceType.toString)) match {
         case Some(v) => Right(v)
         case None => Left("ERROR_INVALID_SOURCE_TYPE")
       }

@@ -18,13 +18,13 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.BaseController
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{Location, SourceType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
+import uk.gov.hmrc.selfassessmentapi.resources.SourceType.SourceType
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods.PropertiesPeriod
 import uk.gov.hmrc.selfassessmentapi.services.{PeriodService, PropertiesService}
 
 object PropertiesResource extends PeriodResource[Location, PropertiesPeriod, Properties] with BaseController {
   override val context: String = AppContext.apiGatewayLinkContext
   override val service: PeriodService[Location, PropertiesPeriod, Properties] = PropertiesService()
-  override val sourceType: SourceType = SourceTypes.UKProperties
+  override val sourceType: SourceType = SourceType.Properties
 }

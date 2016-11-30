@@ -17,10 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment
 
 import org.joda.time.LocalDate
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
-import ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAllowances, SelfEmploymentAdjustments}
+import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAdjustments, SelfEmploymentAllowances}
 
 class SelfEmploymentSpec extends JsonSpec {
 

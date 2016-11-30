@@ -20,10 +20,10 @@ import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{Json, Reads, Writes, __}
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{ExpenseType, IncomeType}
+import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.resources.models.{Amount, positiveAmountValidator}
 
 case class PropertiesPeriod(from: LocalDate,

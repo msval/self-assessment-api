@@ -21,11 +21,10 @@ import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.BalancingChargeType.BalancingChargeType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType.IncomeType
+import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.resources.models.BalancingChargeType.BalancingChargeType
+import uk.gov.hmrc.selfassessmentapi.resources.models.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.resources.models.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 
 case class SelfEmploymentPeriod(from: LocalDate,

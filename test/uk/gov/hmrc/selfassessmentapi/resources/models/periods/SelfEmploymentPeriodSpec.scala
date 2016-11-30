@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.periods
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{BalancingChargeType, ExpenseType, IncomeType}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, JsonSpec}
+import uk.gov.hmrc.selfassessmentapi.resources.{ErrorCode, JsonSpec}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{BalancingChargeType, ExpenseType, IncomeType}
 
 class SelfEmploymentPeriodSpec extends JsonSpec {
   "SelfEmploymentPeriod" should {

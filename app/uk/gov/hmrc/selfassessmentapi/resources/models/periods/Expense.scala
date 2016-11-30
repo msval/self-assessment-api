@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.periods
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 
 case class Expense(amount: Amount, disallowableAmount: Option[Amount])

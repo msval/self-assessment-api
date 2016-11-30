@@ -18,8 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsValue, Json, Writes}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ValidationErrors
+import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode.ErrorCode
 
 object Errors {
   implicit val errorDescWrites: Writes[Error] = Json.writes[Error]

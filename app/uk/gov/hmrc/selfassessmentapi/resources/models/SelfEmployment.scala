@@ -20,8 +20,7 @@ import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
+import uk.gov.hmrc.selfassessmentapi.resources.{ErrorCode, SourceId}
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
 
 case class SelfEmployment(id: Option[SourceId] = None,
@@ -32,7 +31,7 @@ case class SelfEmployment(id: Option[SourceId] = None,
 object SelfEmployment {
 
   val commencementDateValidator: Reads[LocalDate] = Reads.of[LocalDate].filter(
-    ValidationError("commencement date should be today or in the past", DATE_NOT_IN_THE_PAST)
+    ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
   )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
 
   implicit val writes: Writes[SelfEmployment] = Json.writes[SelfEmployment]

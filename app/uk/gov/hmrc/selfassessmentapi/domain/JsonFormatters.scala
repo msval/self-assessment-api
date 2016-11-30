@@ -17,8 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Format, JsResult, JsSuccess, JsValue}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
-import uk.gov.hmrc.selfassessmentapi.resources.models.SelfEmploymentAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAnnualSummary, TaxYear}
 
 /**
   * Provides a suite of JSON formats for objects used throughout the codebase.
@@ -38,12 +37,12 @@ object JsonFormatters {
 
   object SelfEmploymentFormatters {
 
-    import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType
-    import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType._
-    import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType
-    import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType._
-    import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.BalancingChargeType
-    import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.BalancingChargeType._
+    import uk.gov.hmrc.selfassessmentapi.resources.models.IncomeType
+    import uk.gov.hmrc.selfassessmentapi.resources.models.IncomeType._
+    import uk.gov.hmrc.selfassessmentapi.resources.models.ExpenseType
+    import uk.gov.hmrc.selfassessmentapi.resources.models.ExpenseType._
+    import uk.gov.hmrc.selfassessmentapi.resources.models.BalancingChargeType
+    import uk.gov.hmrc.selfassessmentapi.resources.models.BalancingChargeType._
 
     implicit def incomeTypeFormat[V: Format]: MapEnumFormat[IncomeType, V] = new MapEnumFormat[IncomeType, V] {
       override def reads(json: JsValue): JsResult[Map[IncomeType, V]] = {

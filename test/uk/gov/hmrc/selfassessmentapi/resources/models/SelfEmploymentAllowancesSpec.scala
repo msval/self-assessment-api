@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models
 
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
 class SelfEmploymentAllowancesSpec extends JsonSpec {
 

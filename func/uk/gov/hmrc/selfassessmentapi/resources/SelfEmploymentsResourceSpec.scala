@@ -2,8 +2,6 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.{DateTimeZone, LocalDate}
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{BalancingCharge => _, Expense => _, Income => _, SelfEmployment => _, _}
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods._
 import uk.gov.hmrc.support.BaseFunctionalSpec

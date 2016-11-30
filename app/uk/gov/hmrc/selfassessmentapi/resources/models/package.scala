@@ -18,7 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json.Reads
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 
 package object models {
   type Amount = BigDecimal

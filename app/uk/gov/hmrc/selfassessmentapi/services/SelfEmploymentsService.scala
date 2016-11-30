@@ -20,10 +20,10 @@ import org.joda.time.{DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentsRepository
+import uk.gov.hmrc.selfassessmentapi.resources.SourceId
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmployment, SelfEmploymentAnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmployment, SelfEmploymentAnnualSummary, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.errors.BusinessException
 
 import scala.concurrent.ExecutionContext.Implicits.global
