@@ -20,6 +20,8 @@ import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
 object IncomeType extends Enumeration {
   type IncomeType = Value
-  val RentIncome, PremiumsOfLeaseGrant, ReversePremiums = Value
+  val RentIncome = Value("rentIncome")
+  val PremiumsOfLeaseGrant = Value("premiumsOfLeaseGrant")
+  val ReversePremiums = Value("reversePremiums")
   implicit val types = EnumJson.enumFormat(IncomeType, Some("UK Property Income type is invalid"))
 }

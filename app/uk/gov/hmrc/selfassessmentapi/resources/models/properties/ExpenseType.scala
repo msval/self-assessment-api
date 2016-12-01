@@ -20,6 +20,13 @@ import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
-  val PremisesRunningCosts, RepairsAndMaintenance, FinancialCosts, ProfessionalFees, CostOfServices, Other = Value
+
+  val PremisesRunningCosts = Value("premisesRunningCosts")
+  val RepairsAndMaintenance = Value("repairsAndMaintenance")
+  val FinancialCosts = Value("financialCosts")
+  val ProfessionalFees = Value("professionalFees")
+  val CostOfServices = Value("costOfServices")
+  val Other = Value("other")
+
   implicit val types = EnumJson.enumFormat(ExpenseType, Some("UK Property Expense type is invalid"))
 }

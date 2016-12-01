@@ -38,7 +38,7 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
            |  "errors": [
            |    {
            |      "code": "INVALID_MONETARY_AMOUNT",
-           |      "path": "/incomes/RentIncome/amount",
+           |      "path": "/incomes/rentIncome/amount",
            |      "message": "amounts should be positive numbers with up to 2 decimal places"
            |    }
            |  ]
@@ -109,13 +109,13 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
            |  "from": "2016-04-06",
            |  "to": "2016-04-07",
            |  "incomes": {
-           |    "RentIncome": { "amount": 50.55 },
-           |    "PremiumsOfLeaseGrant": { "amount": 20.22 },
-           |    "ReversePremiums": { "amount": 100.25 }
+           |    "rentIncome": { "amount": 50.55 },
+           |    "premiumsOfLeaseGrant": { "amount": 20.22 },
+           |    "reversePremiums": { "amount": 100.25 }
            |  },
            |  "expenses": {
-           |    "PremisesRunningCosts": { "amount": 50.55, "disallowableAmount": 10 },
-           |    "Other": { "amount": 100.22, "disallowableAmount": 10 }
+           |    "premisesRunningCosts": { "amount": 50.55, "disallowableAmount": 10 },
+           |    "other": { "amount": 100.22, "disallowableAmount": 10 }
            |  },
            |  "privateUseAdjustment": 100.25,
            |  "balancingCharge": 20
@@ -141,6 +141,102 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/properties/uk/periods/ohno")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+  }
+
+  "updatePeriod" should {
+    "return code 204 when updating a period associated with a specific identifier" in {
+      val incomes = Map(IncomeType.RentIncome -> Income(50.55), IncomeType.PremiumsOfLeaseGrant -> Income(20.22), IncomeType.ReversePremiums -> Income(100.25))
+      val expenses = Map(ExpenseType.PremisesRunningCosts -> Expense(50.55, Some(10)), ExpenseType.Other -> Expense(100.22, Some(10)))
+      val periodOne = PropertiesPeriod(LocalDate.parse("2016-04-06"), LocalDate.parse("2016-04-07"), incomes, expenses, Some(100.25), Some(20.00))
+      val periodTwo = periodOne.copy(expenses = Map(ExpenseType.PremisesRunningCosts -> Expense(25, Some(5)), ExpenseType.Other -> Expense(200, Some(100))), balancingCharge = Some(50))
+
+      val expectedJson =
+        s"""
+           |{
+           |  "from": "2016-04-06",
+           |  "to": "2016-04-07",
+           |  "incomes": {
+           |    "rentIncome": { "amount": 50.55 },
+           |    "premiumsOfLeaseGrant": { "amount": 20.22 },
+           |    "reversePremiums": { "amount": 100.25 }
+           |  },
+           |  "expenses": {
+           |    "premisesRunningCosts": { "amount": 25, "disallowableAmount": 5 },
+           |    "other": { "amount": 200, "disallowableAmount": 100 }
+           |  },
+           |  "privateUseAdjustment": 100.25,
+           |  "balancingCharge": 50
+           |}
+         """.stripMargin
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(periodOne).to(s"/ni/$nino/properties/uk/periods")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .put(periodTwo).at(s"%periodLocation%")
+        .thenAssertThat()
+        .statusIs(204)
+        .when()
+        .get("%periodLocation%")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyIsLike(expectedJson)
+    }
+
+    "return code 400 when provided with an invalid period" in {
+      val incomes = Map(IncomeType.RentIncome -> Income(50.55), IncomeType.PremiumsOfLeaseGrant -> Income(20.22), IncomeType.ReversePremiums -> Income(100.25))
+      val expenses = Map(ExpenseType.PremisesRunningCosts -> Expense(50.55, Some(10)), ExpenseType.Other -> Expense(100.22, Some(10)))
+      val period = PropertiesPeriod(LocalDate.parse("2016-04-06"), LocalDate.parse("2016-04-07"), incomes, expenses, Some(100.25), Some(20.00))
+
+      val invalidIncomes = Map(IncomeType.RentIncome -> Income(-50.55), IncomeType.PremiumsOfLeaseGrant -> Income(20.22), IncomeType.ReversePremiums -> Income(100.25))
+      val invalidExpenses = Map(ExpenseType.PremisesRunningCosts -> Expense(50.55, Some(10)), ExpenseType.Other -> Expense(100.22, Some(10)))
+      val invalidPeriod =  PropertiesPeriod(LocalDate.parse("2016-04-06"), LocalDate.parse("2016-04-05"), invalidIncomes, invalidExpenses, Some(100.25), Some(20.00))
+
+      val expectedJson =
+        s"""
+           |{
+           |  "code": "INVALID_REQUEST",
+           |  "message": "Invalid request",
+           |  "errors": [
+           |    {
+           |      "code": "INVALID_MONETARY_AMOUNT",
+           |      "path": "/incomes/rentIncome/amount",
+           |      "message": "amounts should be positive numbers with up to 2 decimal places"
+           |    }
+           |  ]
+           |}
+         """.stripMargin
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(period).to(s"/ni/$nino/properties/uk/periods")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .put(invalidPeriod).at(s"%periodLocation%")
+        .thenAssertThat()
+        .statusIs(400)
+        .contentTypeIsJson()
+        .bodyIsLike(expectedJson)
+    }
+
+    "return code 404 when attempting to update a non-existent period" in {
+      val incomes = Map(IncomeType.RentIncome -> Income(50.55), IncomeType.PremiumsOfLeaseGrant -> Income(20.22), IncomeType.ReversePremiums -> Income(100.25))
+      val expenses = Map(ExpenseType.PremisesRunningCosts -> Expense(50.55, Some(10)), ExpenseType.Other -> Expense(100.22, Some(10)))
+      val period = PropertiesPeriod(LocalDate.parse("2016-04-06"), LocalDate.parse("2016-04-07"), incomes, expenses, Some(100.25), Some(20.00))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .put(period).at(s"/ni/$nino/properties/uk/periods/ohno")
         .thenAssertThat()
         .statusIs(404)
     }
