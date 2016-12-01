@@ -9,7 +9,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentPeriodicSummaryFeatureSwitchSpec extends BaseFunctionalSpec {
 
-  private val conf =
+  private val conf: Map[String, _] =
     Map("Test" ->
       Map("feature-switch" ->
         Map("self-employments" ->

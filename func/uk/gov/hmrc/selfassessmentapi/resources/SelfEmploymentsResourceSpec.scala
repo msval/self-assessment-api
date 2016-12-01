@@ -1,9 +1,8 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.{DateTimeZone, LocalDate}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -14,7 +13,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     accountingType = AccountingType.CASH,
     commencementDate = LocalDate.now.minusDays(1))
 
-  implicit def selfEmployment2Json(selfEmployment: SelfEmployment) = Json.toJson(selfEmployment)
+  implicit def selfEmployment2Json(selfEmployment: SelfEmployment): JsValue = Json.toJson(selfEmployment)
 
   "create" should {
     "return code 201 when creating a valid a self-employment source of income" in {
@@ -383,7 +382,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(200)
-        .jsonBodyIsEmptyArray
+        .jsonBodyIsEmptyArray()
     }
   }
 
@@ -763,7 +762,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
-        .body1(_ \\ "periodId").matches("\\w+".r)
+        .selectFields(_ \\ "periodId").matches("\\w+".r)
     }
 
     "return code 200 containing an empty json body when retrieving all periods where periods.size == 0" in {

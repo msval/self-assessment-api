@@ -30,20 +30,20 @@ import scala.concurrent.Future
 
 abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]] {
 
-  val periodRepository : NewSourceRepository[ID, P, PC]
+  val periodRepository: NewSourceRepository[ID, P, PC]
 
   def createPeriod(nino: Nino, id: ID, period: P): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
 
     periodRepository.retrieve(id, nino).flatMap {
-      case Some(selfEmployment) if selfEmployment.containsOverlappingPeriod(period) =>
+      case Some(resource) if resource.containsOverlappingPeriod(period) =>
         Future.successful(Left(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", "")))
-      case Some(selfEmployment) if selfEmployment.containsGap(period) =>
+      case Some(resource) if resource.containsGap(period) =>
         Future.successful(Left(Error(GAP_PERIOD.toString, "Periods should not contain gaps between each other", "")))
-      case Some(selfEmployment) if selfEmployment.containsMisalignedPeriod(period) =>
-        Future.successful(Left(Error(MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the self-employment accounting period", "")))
-      case Some(selfEmployment) =>
-        periodRepository.update(id, nino, selfEmployment.setPeriodsTo(periodId, period)).flatMap {
+      case Some(resource) if resource.containsMisalignedPeriod(period) =>
+        Future.successful(Left(Error(MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the resource accounting period", "")))
+      case Some(resource) =>
+        periodRepository.update(id, nino, resource.setPeriodsTo(periodId, period)).flatMap {
           case true => Future.successful(Right(periodId))
           case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
         }
