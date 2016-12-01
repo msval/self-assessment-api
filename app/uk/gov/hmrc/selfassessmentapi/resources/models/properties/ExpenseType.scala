@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
-import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
-case class Income(amount: Amount)
-
-object Income {
-  implicit val reads: Reads[Income] = (__ \ "amount").read[Amount](positiveAmountValidator).map(Income.apply)
-
-  implicit val writes: Writes[Income] = Json.writes[Income]
+object ExpenseType extends Enumeration {
+  type ExpenseType = Value
+  val PremisesRunningCosts, RepairsAndMaintenance, FinancialCosts, ProfessionalFees, CostOfServices, Other = Value
+  implicit val types = EnumJson.enumFormat(ExpenseType, Some("UK Property Expense type is invalid"))
 }

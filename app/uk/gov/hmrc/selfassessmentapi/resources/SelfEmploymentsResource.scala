@@ -21,11 +21,10 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.{GenericErrorResult, ValidationErrorResult}
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAnnualSummary, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.domain
-import uk.gov.hmrc.selfassessmentapi.resources.SourceType.SourceType
+import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, AnnualSummary, SelfEmploymentPeriod}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
 
 import scala.concurrent.ExecutionContext.Implicits._
@@ -41,7 +40,7 @@ object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPe
   private val seAnnualFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
 
   def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[models.SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
+    validate[SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
       service.create(nino, selfEmployment)
     } match {
       case Left(errorResult) =>
@@ -59,7 +58,7 @@ object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPe
   }
 
   def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[models.SelfEmployment, Boolean](request.body) { selfEmployment =>
+    validate[SelfEmployment, Boolean](request.body) { selfEmployment =>
       service.update(nino, selfEmployment, id)
     } match {
       case Left(errorResult) =>
@@ -90,7 +89,7 @@ object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPe
   }
 
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = seAnnualFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[SelfEmploymentAnnualSummary, Boolean](request.body) {
+    validate[AnnualSummary, Boolean](request.body) {
       service.updateAnnualSummary(nino, id, taxYear, _)
     } match {
       case Left(errorResult) =>

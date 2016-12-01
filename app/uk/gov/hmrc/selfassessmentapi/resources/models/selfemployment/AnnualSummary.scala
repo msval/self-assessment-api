@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-import org.joda.time.LocalDate
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-trait Period {
-  val from: LocalDate
-  val to: LocalDate
+case class AnnualSummary(allowances: Option[Allowances], adjustments: Option[SelfEmploymentAdjustments])
+
+object AnnualSummary {
+  implicit val writer = Json.writes[AnnualSummary]
+
+  implicit val reader: Reads[AnnualSummary] = (
+    (__ \ "allowances").readNullable[Allowances] and
+      (__ \ "adjustments").readNullable[SelfEmploymentAdjustments]
+    ) (AnnualSummary.apply _)
 }

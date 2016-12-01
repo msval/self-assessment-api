@@ -22,8 +22,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{Location, PeriodId}
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
-import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.PropertiesPeriod
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertiesPeriod
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

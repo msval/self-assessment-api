@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.{BalancingCharge, Income, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -69,7 +69,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     }
 
     "return true when updating an annual summaries" in {
-      val summary = SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example))
+      val summary = AnnualSummary(Some(Allowances.example), Some(SelfEmploymentAdjustments.example))
 
       await(repo.create(selfEmployment))
 

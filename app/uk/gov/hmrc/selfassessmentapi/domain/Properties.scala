@@ -21,14 +21,13 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{Location, PeriodId}
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingPeriod
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.PropertiesPeriod
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, PeriodId, PropertyLocation}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertiesPeriod
 
 case class Properties(id: BSONObjectID,
                       lastModifiedDateTime: LocalDate,
                       nino: Nino,
-                      location: Location,
+                      location: PropertyLocation,
                       periods: Map[PeriodId, PropertiesPeriod]) extends PeriodContainer[PropertiesPeriod, Properties] with LastModifiedDateTime {
   private val startTaxYear = LocalDate.parse("2016-04-06")
   private val endTaxYear = LocalDate.parse("2017-04-05")

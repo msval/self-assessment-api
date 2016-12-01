@@ -26,7 +26,7 @@ import reactivemongo.bson.BSONDocument
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmploymentPeriod
 import uk.gov.hmrc.selfassessmentapi.services.NewSourceRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global

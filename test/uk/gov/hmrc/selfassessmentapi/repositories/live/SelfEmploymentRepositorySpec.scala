@@ -27,7 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{SelfEmployment, SelfEmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAllowances, SelfEmploymentAdjustments}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAdjustments, Allowances}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -142,7 +142,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     "return true when the self employment exists and has been updated" in {
       val source = selfEmployment()
 
-      val allowances = SelfEmploymentAllowances(annualInvestmentAllowance = Some(BigDecimal(10.00)),
+      val allowances = Allowances(annualInvestmentAllowance = Some(BigDecimal(10.00)),
                                   capitalAllowanceMainPool = Some(BigDecimal(20.00)),
                                   capitalAllowanceSpecialRatePool = Some(BigDecimal(30.00)),
                                   businessPremisesRenovationAllowance = Some(BigDecimal(50.00)),
@@ -180,7 +180,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       val source = selfEmployment()
 
       val updatedSource = source.copy(
-        allowances = Some(SelfEmploymentAllowances())
+        allowances = Some(Allowances())
       )
 
       verifyUpdate(source, updatedSource)

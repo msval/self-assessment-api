@@ -21,7 +21,8 @@ import play.api.libs.json._
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.ErrorCode
 
 import scala.concurrent.Future
 

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.resources.models._
+
+
 
 case class BalancingCharge(amount: Amount)
 

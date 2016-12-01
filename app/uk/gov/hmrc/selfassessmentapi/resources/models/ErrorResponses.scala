@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.controllers.ErrorResponse
-import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.ErrorCode
 
 case object ErrorNotImplemented extends ErrorResponse(501, "NOT_IMPLEMENTED", "The resource is not implemented")
 

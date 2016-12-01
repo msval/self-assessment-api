@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources
-
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
 object ErrorCode extends Enumeration {
   type ErrorCode = Value
@@ -24,7 +22,6 @@ object ErrorCode extends Enumeration {
     // TODO check name is OK
   INVALID_REQUEST,
   INVALID_FIELD,
-  TAX_YEAR_INVALID,
   MAX_FIELD_LENGTH_EXCEEDED,
   INVALID_MONETARY_AMOUNT,
   INVALID_TAX_DEDUCTION_AMOUNT,

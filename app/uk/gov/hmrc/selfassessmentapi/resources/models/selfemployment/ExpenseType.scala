@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-trait PeriodValidator {
-  protected def periodDateValidator(period: Period): Boolean = period.from.isBefore(period.to)
+import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
+
+object ExpenseType extends Enumeration {
+  type ExpenseType = Value
+  val CoGBought, CISPaymentsToSubcontractors, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts,
+  AdminCosts, AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other =
+    Value
+  implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
 }

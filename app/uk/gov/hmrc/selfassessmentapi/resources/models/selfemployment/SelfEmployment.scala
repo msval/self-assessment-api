@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
 import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.resources.{ErrorCode, SourceId}
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, ErrorCode, SourceId}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.AccountingType._
 
 case class SelfEmployment(id: Option[SourceId] = None,
                           accountingPeriod: AccountingPeriod,

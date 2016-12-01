@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
-sealed trait ErrorResult
-
-case class GenericErrorResult(message: String) extends ErrorResult
-
-case class ValidationErrorResult(validationErrors: ValidationErrors) extends ErrorResult
+trait PeriodValidator {
+  protected def periodDateValidator(period: Period): Boolean = period.from.isBefore(period.to)
+}

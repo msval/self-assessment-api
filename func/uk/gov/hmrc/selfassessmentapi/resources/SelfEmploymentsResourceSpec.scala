@@ -2,8 +2,9 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.{DateTimeZone, LocalDate}
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods._
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
@@ -388,7 +389,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "updateAnnualSummary" should {
     "return code 204 when updating an annual summary for a valid self-employment source" in {
-      val annualSummaries = Json.toJson(models.SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example)))
+      val annualSummaries = Json.toJson(AnnualSummary(Some(Allowances.example), Some(SelfEmploymentAdjustments.example)))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -403,7 +404,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 404 when updating an annual summary for an invalid self-employment source" in {
-      val annualSummaries = Json.toJson(models.SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example)))
+      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(Allowances.example), Some(SelfEmploymentAdjustments.example)))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -415,8 +416,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
     "return code 400 when updating an annual summary providing an invalid adjustment & allowance" in {
       val invalidAdjustment = SelfEmploymentAdjustments.example.copy(includedNonTaxableProfits = Some(-100), overlapReliefUsed = Some(-100))
-      val invalidAllowances = SelfEmploymentAllowances.example.copy(capitalAllowanceMainPool = Some(-100))
-      val annualSummaries = Json.toJson(models.SelfEmploymentAnnualSummary(Some(invalidAllowances), Some(invalidAdjustment)))
+      val invalidAllowances = Allowances.example.copy(capitalAllowanceMainPool = Some(-100))
+      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(invalidAllowances), Some(invalidAdjustment)))
 
       val expectedBody =
         s"""
@@ -460,7 +461,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrieveAnnualSummary" should {
     "return code 200 when retrieving an annual summary that exists" in {
-      val annualSummaries = Json.toJson(models.SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example)))
+      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(Allowances.example), Some(SelfEmploymentAdjustments.example)))
       val expectedJson = Json.toJson(annualSummaries).toString()
 
       given()

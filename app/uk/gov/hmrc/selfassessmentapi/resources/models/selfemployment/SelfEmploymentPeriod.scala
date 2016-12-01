@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
 import com.github.nscala_time.time.OrderingImplicits
 import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.resources.models.BalancingChargeType.BalancingChargeType
-import uk.gov.hmrc.selfassessmentapi.resources.models.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.resources.models.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.resources.models._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, _}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.BalancingChargeType.BalancingChargeType
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.IncomeType.IncomeType
 
 case class SelfEmploymentPeriod(from: LocalDate,
                                 to: LocalDate,

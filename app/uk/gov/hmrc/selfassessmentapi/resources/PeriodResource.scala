@@ -20,12 +20,11 @@ import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.controllers.{GenericErrorResult, ValidationErrorResult}
 import uk.gov.hmrc.selfassessmentapi.domain.PeriodContainer
-import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource._
-import uk.gov.hmrc.selfassessmentapi.resources.SourceType.SourceType
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.Period
+import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.services.PeriodService
 
 import scala.concurrent.ExecutionContext.Implicits.global

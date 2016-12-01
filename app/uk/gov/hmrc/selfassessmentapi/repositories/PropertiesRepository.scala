@@ -26,7 +26,7 @@ import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.controllers.api.Location
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.PropertiesPeriod
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertiesPeriod
 import uk.gov.hmrc.selfassessmentapi.services.NewSourceRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
 import play.api.data.validation.ValidationError
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.resources.models._
+import play.api.libs.json._
+
+
 
 case class Expense(amount: Amount, disallowableAmount: Option[Amount])
 

@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-object ExpenseType extends Enumeration {
-  type ExpenseType = Value
-  val CoGBought, CISPaymentsToSubcontractors, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts,
-  AdminCosts, AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other =
-    Value
-  implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
+import play.api.libs.json.Format
+import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
+
+object AccountingType extends Enumeration {
+  type AccountingType = Value
+
+  val CASH, ACCRUAL = Value
+
+  implicit val format: Format[AccountingType] =
+    EnumJson.enumFormat(AccountingType, Some("AccountingType should be either CASH or ACCRUAL"))
 }

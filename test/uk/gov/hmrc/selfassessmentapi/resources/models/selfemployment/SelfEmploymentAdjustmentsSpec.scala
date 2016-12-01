@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
-import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode._
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
+
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.INVALID_MONETARY_AMOUNT
 
 class SelfEmploymentAdjustmentsSpec extends JsonSpec {
 

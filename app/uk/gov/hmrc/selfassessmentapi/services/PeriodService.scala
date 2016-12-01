@@ -19,11 +19,11 @@ package uk.gov.hmrc.selfassessmentapi.services
 import play.api.libs.json.Format
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.domain.PeriodContainer
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.{Period, PeriodSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

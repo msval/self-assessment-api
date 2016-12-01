@@ -16,16 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+sealed trait ErrorResult
 
-case class SelfEmploymentAnnualSummary(allowances: Option[SelfEmploymentAllowances], adjustments: Option[SelfEmploymentAdjustments])
+case class GenericErrorResult(message: String) extends ErrorResult
 
-object SelfEmploymentAnnualSummary {
-  implicit val writer = Json.writes[SelfEmploymentAnnualSummary]
-
-  implicit val reader: Reads[SelfEmploymentAnnualSummary] = (
-    (__ \ "allowances").readNullable[SelfEmploymentAllowances] and
-      (__ \ "adjustments").readNullable[SelfEmploymentAdjustments]
-    ) (SelfEmploymentAnnualSummary.apply _)
-}
+case class ValidationErrorResult(validationErrors: ValidationErrors) extends ErrorResult

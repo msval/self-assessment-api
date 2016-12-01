@@ -2,8 +2,8 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{ExpenseType, IncomeType}
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.{Expense, Income, PropertiesPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Expense, Income}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{ExpenseType, IncomeType, PropertiesPeriod}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class PropertiesResourceSpec extends BaseFunctionalSpec {

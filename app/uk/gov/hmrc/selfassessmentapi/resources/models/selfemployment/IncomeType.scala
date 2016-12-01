@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-object BalancingChargeType extends Enumeration {
-  type BalancingChargeType = Value
-  val BPRA, Other = Value
-  implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeType, Some("Self Employment Balancing charge type is invalid"))
+import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
+
+object IncomeType extends Enumeration {
+  type IncomeType = Value
+  val Turnover, Other = Value
+  implicit val seIncomeTypes = EnumJson.enumFormat(IncomeType, Some("Self Employment Income type is invalid"))
 }

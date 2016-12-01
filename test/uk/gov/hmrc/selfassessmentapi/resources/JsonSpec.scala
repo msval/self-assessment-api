@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.ErrorCode
 
 trait JsonSpec extends UnitSpec {
 

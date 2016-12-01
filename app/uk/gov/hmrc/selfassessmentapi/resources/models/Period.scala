@@ -16,14 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models
 
-import play.api.libs.json.Format
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import org.joda.time.LocalDate
 
-object AccountingType extends Enumeration {
-  type AccountingType = Value
-
-  val CASH, ACCRUAL = Value
-
-  implicit val format: Format[AccountingType] =
-    EnumJson.enumFormat(AccountingType, Some("AccountingType should be either CASH or ACCRUAL"))
+trait Period {
+  val from: LocalDate
+  val to: LocalDate
 }

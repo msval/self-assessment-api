@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
-import uk.gov.hmrc.selfassessmentapi.resources.models.ValidationErrors
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
-sealed trait ErrorResult
-
-case class GenericErrorResult(message: String) extends ErrorResult
-
-case class ValidationErrorResult(validationErrors: ValidationErrors) extends ErrorResult
+object IncomeType extends Enumeration {
+  type IncomeType = Value
+  val RentIncome, PremiumsOfLeaseGrant, ReversePremiums = Value
+  implicit val types = EnumJson.enumFormat(IncomeType, Some("UK Property Income type is invalid"))
+}

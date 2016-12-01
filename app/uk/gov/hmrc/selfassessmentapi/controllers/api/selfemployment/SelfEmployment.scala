@@ -21,14 +21,13 @@ import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, JsonMarshaller}
-import ErrorCode.{apply => _, _}
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAdjustments, SelfEmploymentAllowances}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{JsonMarshaller, _}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAdjustments, Allowances}
 
 case class SelfEmployment(id: Option[SourceId] = None,
                           commencementDate: LocalDate,
-                          allowances: Option[SelfEmploymentAllowances] = None,
+                          allowances: Option[Allowances] = None,
                           adjustments: Option[SelfEmploymentAdjustments] = None)
 
 object SelfEmployment extends JsonMarshaller[SelfEmployment]{
@@ -40,7 +39,7 @@ object SelfEmployment extends JsonMarshaller[SelfEmployment]{
   implicit val reads: Reads[SelfEmployment] = (
     Reads.pure(None) and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
-      (__ \ "allowances").readNullable[SelfEmploymentAllowances] and
+      (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[SelfEmploymentAdjustments]
     ) (SelfEmployment.apply _)
 
@@ -48,6 +47,6 @@ object SelfEmployment extends JsonMarshaller[SelfEmployment]{
   override def example(id: Option[String]) = SelfEmployment(
     id,
     commencementDate = LocalDate.parse("2016-01-01"),
-    allowances = Some(SelfEmploymentAllowances.example),
+    allowances = Some(Allowances.example),
     adjustments = Some(SelfEmploymentAdjustments.example))
 }

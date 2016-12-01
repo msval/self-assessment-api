@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.resources.{ErrorCode, JsonSpec}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{BalancingChargeType, ExpenseType, IncomeType}
+import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, Expense, Income}
 
 class SelfEmploymentPeriodSpec extends JsonSpec {
   "SelfEmploymentPeriod" should {

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsValue, Json, Writes}
-import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.ErrorCode
 
 object Errors {
   implicit val errorDescWrites: Writes[Error] = Json.writes[Error]

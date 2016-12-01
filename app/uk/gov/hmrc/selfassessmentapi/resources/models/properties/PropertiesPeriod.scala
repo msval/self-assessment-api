@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
 import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
-import play.api.libs.json.{Json, Reads, Writes, __}
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{ExpenseType, IncomeType}
-import uk.gov.hmrc.selfassessmentapi.resources.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.resources.models.{Amount, positiveAmountValidator}
+import play.api.libs.json.{Json, Reads, Writes, __}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.IncomeType.IncomeType
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Expense, _}
 
 case class PropertiesPeriod(from: LocalDate,
                             to: LocalDate,
-                            incomes: Map[IncomeType.Value, Income],
-                            expenses: Map[ExpenseType.Value, Expense],
+                            incomes: Map[IncomeType, Income],
+                            expenses: Map[ExpenseType, Expense],
                             privateUseAdjustment: Option[Amount],
                             balancingCharge: Option[Amount]) extends Period
 
 object PropertiesPeriod extends PeriodValidator {
-  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.PropertiesFormatters.{ expenseTypeFormat, incomeTypeFormat }
+  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.PropertiesFormatters.{expenseTypeFormat, incomeTypeFormat}
 
   implicit val writes: Writes[PropertiesPeriod] = Json.writes[PropertiesPeriod]
 

@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.resources.models.positiveAmountValidator
 import uk.gov.hmrc.selfassessmentapi.resources.{CapAt, Sum}
 
-case class SelfEmploymentAllowances(annualInvestmentAllowance: Option[BigDecimal] = None,
-                                    capitalAllowanceMainPool: Option[BigDecimal] = None,
-                                    capitalAllowanceSpecialRatePool: Option[BigDecimal] = None,
-                                    businessPremisesRenovationAllowance: Option[BigDecimal] = None,
-                                    enhancedCapitalAllowance: Option[BigDecimal] = None,
-                                    allowancesOnSales: Option[BigDecimal] = None) {
+case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
+                      capitalAllowanceMainPool: Option[BigDecimal] = None,
+                      capitalAllowanceSpecialRatePool: Option[BigDecimal] = None,
+                      businessPremisesRenovationAllowance: Option[BigDecimal] = None,
+                      enhancedCapitalAllowance: Option[BigDecimal] = None,
+                      allowancesOnSales: Option[BigDecimal] = None) {
 
   private val maxAnnualInvestmentAllowance = 200000
 
@@ -36,9 +37,9 @@ case class SelfEmploymentAllowances(annualInvestmentAllowance: Option[BigDecimal
   }
 }
 
-object SelfEmploymentAllowances {
+object Allowances {
 
-  lazy val example = SelfEmploymentAllowances(
+  lazy val example = Allowances(
     annualInvestmentAllowance = Some(BigDecimal(1000.00)),
     capitalAllowanceMainPool = Some(BigDecimal(150.00)),
     capitalAllowanceSpecialRatePool = Some(BigDecimal(5000.50)),
@@ -46,14 +47,14 @@ object SelfEmploymentAllowances {
     enhancedCapitalAllowance = Some(BigDecimal(50.00)),
     allowancesOnSales = Some(BigDecimal(3399.99)))
 
-  implicit val writes = Json.writes[SelfEmploymentAllowances]
+  implicit val writes = Json.writes[Allowances]
 
-  implicit val reads: Reads[SelfEmploymentAllowances] = (
+  implicit val reads: Reads[Allowances] = (
       (__ \ "annualInvestmentAllowance").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "capitalAllowanceMainPool").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "allowancesOnSales").readNullable[BigDecimal](positiveAmountValidator)
-    ) (SelfEmploymentAllowances.apply _)
+    ) (Allowances.apply _)
 }
