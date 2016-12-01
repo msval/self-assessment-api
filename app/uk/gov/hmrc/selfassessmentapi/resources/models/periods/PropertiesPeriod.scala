@@ -33,7 +33,7 @@ case class PropertiesPeriod(from: LocalDate,
                             privateUseAdjustment: Option[Amount],
                             balancingCharge: Option[Amount]) extends Period
 
-object PropertiesPeriod extends PeriodValidator {
+object PropertiesPeriod {
   import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.PropertiesFormatters.{ expenseTypeFormat, incomeTypeFormat }
 
   implicit val writes: Writes[PropertiesPeriod] = Json.writes[PropertiesPeriod]
@@ -48,6 +48,5 @@ object PropertiesPeriod extends PeriodValidator {
     ) (
     (from, to, incomes, expenses, privateUseAdjustment, balancingCharge) => {
       PropertiesPeriod(from, to, incomes.getOrElse(Map.empty), expenses.getOrElse(Map.empty), privateUseAdjustment, balancingCharge)})
-    .filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(periodDateValidator)
-
+    .filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(PeriodValidator.periodDateValidator)
 }
