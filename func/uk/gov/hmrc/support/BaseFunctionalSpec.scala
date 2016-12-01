@@ -304,7 +304,7 @@ trait BaseFunctionalSpec extends TestApplication {
       new BodyAssertions(myQuery(response.json).toOption, this)
     }
 
-    def selectFields(myQuery: JsValue => Seq[JsValue]) = {
+    def body1(myQuery: JsValue => Seq[JsValue]) = {
       new BodyListAssertions(myQuery(response.json), this)
     }
 
@@ -406,7 +406,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
   class HttpVerbs()(implicit urlPathVariables: mutable.Map[String, String] = mutable.Map()) {
 
-    def post(body: JsValue): HttpPostBodyWrapper = {
+    def post(body: JsValue) = {
       new HttpPostBodyWrapper("POST", Some(body))
     }
 

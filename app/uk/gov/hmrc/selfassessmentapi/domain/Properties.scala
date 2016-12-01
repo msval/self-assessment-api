@@ -30,7 +30,6 @@ case class Properties(id: BSONObjectID,
                       nino: Nino,
                       location: Location,
                       periods: Map[PeriodId, PropertiesPeriod]) extends PeriodContainer[PropertiesPeriod, Properties] with LastModifiedDateTime {
-  // TODO: Post-MVP, the accounting period should be derived from the current tax year.
   private val startTaxYear = LocalDate.parse("2016-04-06")
   private val endTaxYear = LocalDate.parse("2017-04-05")
   private val accountingPeriod = AccountingPeriod(startTaxYear, endTaxYear)

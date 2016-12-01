@@ -764,7 +764,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
-        .selectFields(_ \\ "periodId").matches("\\w+".r)
+        .body1(_ \\ "periodId").matches("\\w+".r)
     }
 
     "return code 200 containing an empty json body when retrieving all periods where periods.size == 0" in {

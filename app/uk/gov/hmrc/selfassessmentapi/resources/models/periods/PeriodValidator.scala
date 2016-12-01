@@ -16,6 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.periods
 
-object PeriodValidator {
-  def periodDateValidator(period: Period): Boolean = period.from.isBefore(period.to)
+trait PeriodValidator {
+  protected def periodDateValidator(period: Period): Boolean = period.from.isBefore(period.to)
 }

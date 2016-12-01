@@ -35,7 +35,7 @@ case class SelfEmploymentPeriod(from: LocalDate,
                                 balancingCharges: Map[BalancingChargeType, BalancingCharge],
                                 goodsAndServicesOwnUse: Option[Amount]) extends Period
 
-object SelfEmploymentPeriod {
+object SelfEmploymentPeriod extends PeriodValidator {
   import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.{expenseTypeFormat, incomeTypeFormat, balancingChargeTypeFormat}
 
   implicit val writes: Writes[SelfEmploymentPeriod] = Json.writes[SelfEmploymentPeriod]
@@ -49,10 +49,12 @@ object SelfEmploymentPeriod {
     ) (
     (from, to, income, expense, balancing, goods) => {
       SelfEmploymentPeriod(from, to, income.getOrElse(Map.empty), expense.getOrElse(Map.empty), balancing.getOrElse(Map.empty), goods)})
-    .filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(PeriodValidator.periodDateValidator)
+    .filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(periodDateValidator)
 
   private implicit val dateTimeOrder: Ordering[LocalDate] = OrderingImplicits.LocalDateOrdering
   implicit val order: Ordering[SelfEmploymentPeriod] = Ordering.by(_.from)
+
+  private def periodDateValidator(period: SelfEmploymentPeriod) = period.from.isBefore(period.to)
 
   private def depreciationValidator = Reads.of[Map[ExpenseType, Expense]].filter(
     ValidationError("the disallowableAmount for depreciation expenses must be the same as the amount", ErrorCode.DEPRECIATION_DISALLOWABLE_AMOUNT)
