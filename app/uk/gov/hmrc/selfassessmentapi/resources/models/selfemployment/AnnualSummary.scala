@@ -19,13 +19,13 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class AnnualSummary(allowances: Option[Allowances], adjustments: Option[SelfEmploymentAdjustments])
+case class AnnualSummary(allowances: Option[Allowances], adjustments: Option[Adjustments])
 
 object AnnualSummary {
   implicit val writer = Json.writes[AnnualSummary]
 
   implicit val reader: Reads[AnnualSummary] = (
     (__ \ "allowances").readNullable[Allowances] and
-      (__ \ "adjustments").readNullable[SelfEmploymentAdjustments]
+      (__ \ "adjustments").readNullable[Adjustments]
     ) (AnnualSummary.apply _)
 }

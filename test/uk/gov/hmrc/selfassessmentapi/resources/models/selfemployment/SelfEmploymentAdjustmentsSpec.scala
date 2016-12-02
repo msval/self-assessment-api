@@ -23,7 +23,7 @@ class SelfEmploymentAdjustmentsSpec extends JsonSpec {
 
   "format" should {
     "round trip valid Adjustments json" in {
-      roundTripJson(SelfEmploymentAdjustments(
+      roundTripJson(Adjustments(
         includedNonTaxableProfits = Some(BigDecimal(10.00)),
         basisAdjustment = Some(BigDecimal(10.00)),
         overlapReliefUsed = Some(BigDecimal(10.00)),
@@ -34,78 +34,78 @@ class SelfEmploymentAdjustmentsSpec extends JsonSpec {
     }
 
     "round trip Adjustments with no fields" in {
-      roundTripJson(SelfEmploymentAdjustments())
+      roundTripJson(Adjustments())
     }
   }
 
   "validate" should {
-    def validatePositiveAmount(model: SelfEmploymentAdjustments, path: String) = {
+    def validatePositiveAmount(model: Adjustments, path: String) = {
       assertValidationErrorWithCode(model, path,
         INVALID_MONETARY_AMOUNT)
     }
 
-    def validateAmount(model: SelfEmploymentAdjustments, path: String) = {
+    def validateAmount(model: Adjustments, path: String) = {
       assertValidationErrorWithCode(model, path,
         INVALID_MONETARY_AMOUNT)
     }
 
     "reject negative includedNonTaxableProfits" in {
-      val se = SelfEmploymentAdjustments(includedNonTaxableProfits = Some(BigDecimal(-10.00)))
+      val se = Adjustments(includedNonTaxableProfits = Some(BigDecimal(-10.00)))
       validatePositiveAmount(se, "/includedNonTaxableProfits")
     }
 
     "reject includedNonTaxableProfits with more than two decimal places" in {
-      val se = SelfEmploymentAdjustments(includedNonTaxableProfits = Some(BigDecimal(10.123)))
+      val se = Adjustments(includedNonTaxableProfits = Some(BigDecimal(10.123)))
       validatePositiveAmount(se, "/includedNonTaxableProfits")
     }
 
     "reject basisAdjustment with more than two decimal places" in {
-      val se = SelfEmploymentAdjustments(basisAdjustment = Some(BigDecimal(10.123)))
+      val se = Adjustments(basisAdjustment = Some(BigDecimal(10.123)))
       validateAmount(se, "/basisAdjustment")
     }
 
     "reject negative overlapReliefUsed" in {
-      val se = SelfEmploymentAdjustments(overlapReliefUsed = Some(BigDecimal(-10.00)))
+      val se = Adjustments(overlapReliefUsed = Some(BigDecimal(-10.00)))
      validatePositiveAmount(se, "/overlapReliefUsed")
     }
 
     "reject overlapReliefUsed with more than two decimal places" in {
-      val se = SelfEmploymentAdjustments(overlapReliefUsed = Some(BigDecimal(10.123)))
+      val se = Adjustments(overlapReliefUsed = Some(BigDecimal(10.123)))
       validatePositiveAmount(se, "/overlapReliefUsed")
     }
 
     "reject negative accountingAdjustment" in {
-      val se = SelfEmploymentAdjustments(accountingAdjustment = Some(BigDecimal(-10.00)))
+      val se = Adjustments(accountingAdjustment = Some(BigDecimal(-10.00)))
       validatePositiveAmount(se, "/accountingAdjustment")
     }
 
     "reject accountingAdjustment with more than two decimal places" in {
-      val se = SelfEmploymentAdjustments(accountingAdjustment = Some(BigDecimal(10.123)))
+      val se = Adjustments(accountingAdjustment = Some(BigDecimal(10.123)))
       validatePositiveAmount(se, "/accountingAdjustment")
     }
 
     "reject averagingAdjustment with more than two decimal places" in {
-      val se = SelfEmploymentAdjustments(averagingAdjustment = Some(BigDecimal(10.123)))
+      val se = Adjustments(averagingAdjustment = Some(BigDecimal(10.123)))
       validateAmount(se, "/averagingAdjustment")
     }
 
     "reject negative lossBroughtForward" in {
-      val se = SelfEmploymentAdjustments(lossBroughtForward = Some(BigDecimal(-10.00)))
+      val se = Adjustments(lossBroughtForward = Some(BigDecimal(-10.00)))
       validatePositiveAmount(se, "/lossBroughtForward")
     }
 
     "reject lossBroughtForward with more than two decimal places" in {
-      val se = SelfEmploymentAdjustments(lossBroughtForward = Some(BigDecimal(10.123)))
+      val se = Adjustments(lossBroughtForward = Some(BigDecimal(10.123)))
       validatePositiveAmount(se, "/lossBroughtForward")
     }
 
     "reject negative outstandingBusinessIncome" in {
-      val se = SelfEmploymentAdjustments(outstandingBusinessIncome = Some(BigDecimal(-10.00)))
+      val se = Adjustments(outstandingBusinessIncome = Some(BigDecimal(-10.00)))
       validatePositiveAmount(se, "/outstandingBusinessIncome")
     }
 
     "reject outstandingBusinessIncome with more than two decimal places" in {
-      val se = SelfEmploymentAdjustments(outstandingBusinessIncome = Some(BigDecimal(10.123)))
+      val se = Adjustments(outstandingBusinessIncome = Some(BigDecimal(10.123)))
       validatePositiveAmount(se, "/outstandingBusinessIncome")
     }
   }

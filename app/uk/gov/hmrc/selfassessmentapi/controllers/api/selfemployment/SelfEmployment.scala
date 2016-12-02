@@ -23,12 +23,12 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{JsonMarshaller, _}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAdjustments, Allowances}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{Adjustments, Allowances}
 
 case class SelfEmployment(id: Option[SourceId] = None,
                           commencementDate: LocalDate,
                           allowances: Option[Allowances] = None,
-                          adjustments: Option[SelfEmploymentAdjustments] = None)
+                          adjustments: Option[Adjustments] = None)
 
 object SelfEmployment extends JsonMarshaller[SelfEmployment]{
 
@@ -40,7 +40,7 @@ object SelfEmployment extends JsonMarshaller[SelfEmployment]{
     Reads.pure(None) and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
       (__ \ "allowances").readNullable[Allowances] and
-      (__ \ "adjustments").readNullable[SelfEmploymentAdjustments]
+      (__ \ "adjustments").readNullable[Adjustments]
     ) (SelfEmployment.apply _)
 
 
@@ -48,5 +48,5 @@ object SelfEmployment extends JsonMarshaller[SelfEmployment]{
     id,
     commencementDate = LocalDate.parse("2016-01-01"),
     allowances = Some(Allowances.example),
-    adjustments = Some(SelfEmploymentAdjustments.example))
+    adjustments = Some(Adjustments.example))
 }

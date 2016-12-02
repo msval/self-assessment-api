@@ -21,18 +21,18 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.resources.models.{amountValidator, positiveAmountValidator}
 
-case class SelfEmploymentAdjustments(includedNonTaxableProfits: Option[BigDecimal] = None,
-                                     basisAdjustment: Option[BigDecimal] = None,
-                                     overlapReliefUsed: Option[BigDecimal] = None,
-                                     accountingAdjustment: Option[BigDecimal] = None,
-                                     averagingAdjustment: Option[BigDecimal] = None,
-                                     lossBroughtForward: Option[BigDecimal] = None,
-                                     outstandingBusinessIncome: Option[BigDecimal] = None)
+case class Adjustments(includedNonTaxableProfits: Option[BigDecimal] = None,
+                       basisAdjustment: Option[BigDecimal] = None,
+                       overlapReliefUsed: Option[BigDecimal] = None,
+                       accountingAdjustment: Option[BigDecimal] = None,
+                       averagingAdjustment: Option[BigDecimal] = None,
+                       lossBroughtForward: Option[BigDecimal] = None,
+                       outstandingBusinessIncome: Option[BigDecimal] = None)
 
-object SelfEmploymentAdjustments {
-  implicit val writes: Writes[SelfEmploymentAdjustments] = Json.writes[SelfEmploymentAdjustments]
+object Adjustments {
+  implicit val writes: Writes[Adjustments] = Json.writes[Adjustments]
 
-  implicit val reads: Reads[SelfEmploymentAdjustments] = (
+  implicit val reads: Reads[Adjustments] = (
     (__ \ "includedNonTaxableProfits").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "basisAdjustment").readNullable[BigDecimal](amountValidator) and
       (__ \ "overlapReliefUsed").readNullable[BigDecimal](positiveAmountValidator) and
@@ -40,9 +40,9 @@ object SelfEmploymentAdjustments {
       (__ \ "averagingAdjustment").readNullable[BigDecimal](amountValidator) and
       (__ \ "lossBroughtForward").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "outstandingBusinessIncome").readNullable[BigDecimal](positiveAmountValidator)
-    ) (SelfEmploymentAdjustments.apply _)
+    ) (Adjustments.apply _)
 
-  lazy val example = SelfEmploymentAdjustments(
+  lazy val example = Adjustments(
     includedNonTaxableProfits = Some(BigDecimal(50.00)),
     basisAdjustment = Some(BigDecimal(20.10)),
     overlapReliefUsed = Some(BigDecimal(500.00)),

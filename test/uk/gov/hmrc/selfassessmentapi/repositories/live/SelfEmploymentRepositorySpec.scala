@@ -27,7 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{SelfEmployment, SelfEmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAdjustments, Allowances}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{Adjustments, Allowances}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -149,7 +149,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
                                   enhancedCapitalAllowance = Some(BigDecimal(60.00)),
                                   allowancesOnSales = Some(BigDecimal(70.00)))
 
-      val adjustments = SelfEmploymentAdjustments(includedNonTaxableProfits = Some(BigDecimal(10.00)),
+      val adjustments = Adjustments(includedNonTaxableProfits = Some(BigDecimal(10.00)),
                                     basisAdjustment = Some(BigDecimal(20.00)),
                                     overlapReliefUsed = Some(BigDecimal(30.00)),
                                     accountingAdjustment = Some(BigDecimal(40.00)),
@@ -200,7 +200,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       val source = selfEmployment()
 
       val updatedSource = source.copy(
-        adjustments = Some(SelfEmploymentAdjustments())
+        adjustments = Some(Adjustments())
       )
 
       verifyUpdate(source, updatedSource)

@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType.I
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{SelfEmployment => _, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAdjustments, Allowances}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{Adjustments, Allowances}
 
 case class SelfEmploymentBuilder(objectID: BSONObjectID = BSONObjectID.generate) {
   def create() = selfEmployment
@@ -37,7 +37,7 @@ case class SelfEmploymentBuilder(objectID: BSONObjectID = BSONObjectID.generate)
                    now,
                    now.toLocalDate,
                    Some(Allowances()),
-                   Some(SelfEmploymentAdjustments()))
+                   Some(Adjustments()))
 
   def withAllowances(allowancesOnSales: BigDecimal,
                      enhancedCapitalAllowance: BigDecimal,
