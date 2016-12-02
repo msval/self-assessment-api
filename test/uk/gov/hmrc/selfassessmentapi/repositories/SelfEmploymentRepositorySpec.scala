@@ -33,7 +33,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   private val repo = new SelfEmploymentsRepository
   private val id = BSONObjectID.generate
   private val selfEmployment = SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC),
-    AccountingPeriod(LocalDate.now(DateTimeZone.UTC), LocalDate.now(DateTimeZone.UTC).plusDays(1)), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
+    AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
 
   override def beforeEach(): Unit = {
     await(repo.drop)
@@ -63,8 +63,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       await(repo.update(id.stringify, nino, updatedSelfEmployment)) shouldBe true
 
       val result = await(repo.retrieve(id.stringify, nino)).get
-      result.accountingPeriod shouldBe selfEmployment.accountingPeriod
-      result.accountingType shouldBe selfEmployment.accountingType
+      result.accountingPeriod shouldBe updatedSelfEmployment.accountingPeriod
+      result.accountingType shouldBe updatedSelfEmployment.accountingType
       result.commencementDate shouldBe updatedSelfEmployment.commencementDate
     }
 
@@ -106,7 +106,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     "return a sequence of self employments" in {
       val id2 = BSONObjectID.generate
       val selfEmploymentTwo = SelfEmployment(id2, id2.stringify, nino, LocalDate.now(DateTimeZone.UTC),
-        AccountingPeriod(LocalDate.now(DateTimeZone.UTC), LocalDate.now(DateTimeZone.UTC).plusDays(1)), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
+        AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
 
       await(repo.create(selfEmployment))
       await(repo.create(selfEmploymentTwo))

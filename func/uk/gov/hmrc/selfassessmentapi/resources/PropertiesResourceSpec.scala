@@ -22,7 +22,7 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
         .post(period).to(s"/ni/$nino/properties/uk/periods")
         .thenAssertThat()
         .statusIs(201)
-        .responseContainsHeader("Location", s"/ni/$nino/properties/uk/periods/\\w+".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/properties/uk/periods/\\w+".r)
     }
 
     "return code 400 when provided with an invalid uk property period" in {
