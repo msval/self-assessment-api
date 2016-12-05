@@ -44,7 +44,7 @@ object SelfEmploymentsService {
 
 class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) extends SelfEmploymentsService {
 
-  override val periodRepository: SelfEmploymentsRepository = mongoRepository
+  override val repository: SelfEmploymentsRepository = mongoRepository
 
   override def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]] = {
     val id = BSONObjectID.generate

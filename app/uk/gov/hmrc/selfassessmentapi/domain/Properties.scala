@@ -21,14 +21,15 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, PeriodId, PropertyLocation}
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertiesPeriod
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, PeriodId, PropertyLocation, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{AnnualSummary, PropertiesPeriod}
 
 case class Properties(id: BSONObjectID,
                       lastModifiedDateTime: LocalDate,
                       nino: Nino,
                       location: PropertyLocation,
-                      periods: Map[PeriodId, PropertiesPeriod]) extends PeriodContainer[PropertiesPeriod, Properties] with LastModifiedDateTime {
+                      periods: Map[PeriodId, PropertiesPeriod],
+                      annualSummaries: Map[TaxYear, AnnualSummary]) extends PeriodContainer[PropertiesPeriod, Properties] with LastModifiedDateTime {
   private val startTaxYear = LocalDate.parse("2016-04-06")
   private val endTaxYear = LocalDate.parse("2017-04-05")
   private val accountingPeriod = AccountingPeriod(startTaxYear, endTaxYear)
@@ -43,6 +44,8 @@ case class Properties(id: BSONObjectID,
 }
 
 object Properties {
+  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.PropertiesFormatters.annualSummaryMapFormat
+
   implicit val mongoFormats = ReactiveMongoFormats.mongoEntity({
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats

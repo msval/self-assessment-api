@@ -16,15 +16,41 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.Action
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.models.{PropertyLocation, SourceType}
-import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertiesPeriod
-import uk.gov.hmrc.selfassessmentapi.services.{PeriodService, PropertiesService}
+import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{AnnualSummary, PropertiesPeriod}
+import uk.gov.hmrc.selfassessmentapi.services.PropertiesService
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object PropertiesResource extends PeriodResource[PropertyLocation, PropertiesPeriod, Properties] with BaseResource {
-  override val context: String = AppContext.apiGatewayLinkContext
-  override val service: PeriodService[PropertyLocation, PropertiesPeriod, Properties] = PropertiesService()
-  override val sourceType: SourceType = SourceType.Properties
+  override val context = AppContext.apiGatewayLinkContext
+  override val service = PropertiesService()
+  override val sourceType = SourceType.Properties
+
+  private val annSummaryFeatureSwitch = FeatureSwitchAction(sourceType, "annual")
+
+  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annSummaryFeatureSwitch.asyncFeatureSwitch { request =>
+    validate[AnnualSummary, Boolean](request.body) {
+      service.updateAnnualSummary(nino, id, taxYear, _)
+    } match {
+      case Left(errorResult) =>
+        Future.successful {
+          errorResult match {
+            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
+            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
+          }
+        }
+      case Right(result) => result.map {
+        case true => NoContent
+        case false => NotFound
+      }
+    }
+  }
 }

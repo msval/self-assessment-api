@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.INVALID_MONETARY_AMOUNT
 
-class SelfEmploymentAllowancesSpec extends JsonSpec {
+class AllowancesSpec extends JsonSpec {
 
   "format" should {
     "round trip valid Allowances json" in {

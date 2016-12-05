@@ -18,8 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Format, JsResult, JsSuccess, JsValue}
 import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.AnnualSummary
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.IncomeType.IncomeType
 
 /**
   * Provides a suite of JSON formats for objects used throughout the codebase.
@@ -39,6 +37,7 @@ object JsonFormatters {
 
   object SelfEmploymentFormatters {
 
+    import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.AnnualSummary
     import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.BalancingChargeType.BalancingChargeType
     import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.ExpenseType.ExpenseType
     import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.IncomeType.IncomeType
@@ -91,6 +90,7 @@ object JsonFormatters {
 
   object PropertiesFormatters {
 
+    import uk.gov.hmrc.selfassessmentapi.resources.models.properties.AnnualSummary
     import uk.gov.hmrc.selfassessmentapi.resources.models.properties.ExpenseType.ExpenseType
     import uk.gov.hmrc.selfassessmentapi.resources.models.properties.IncomeType.IncomeType
     import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{ ExpenseType, IncomeType}
@@ -112,6 +112,20 @@ object JsonFormatters {
             case (k, v) => ExpenseType.withName(k) -> v
           })
         }
+      }
+    }
+
+    implicit val annualSummaryMapFormat: Format[Map[TaxYear, AnnualSummary]] = new Format[Map[TaxYear, AnnualSummary]] {
+      override def writes(o: Map[TaxYear, AnnualSummary]): JsValue = {
+        play.api.libs.json.Writes.mapWrites[AnnualSummary].writes(o.map {
+          case (k, v) => k.toString -> v
+        })
+      }
+
+      override def reads(json: JsValue): JsResult[Map[TaxYear, AnnualSummary]] = {
+        play.api.libs.json.Reads.mapReads[AnnualSummary].reads(json).map(_.map {
+          case (k, v) => TaxYear(k) -> v
+        })
       }
     }
   }

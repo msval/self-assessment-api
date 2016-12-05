@@ -30,12 +30,12 @@ import scala.concurrent.Future
 
 abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]] {
 
-  val periodRepository: NewSourceRepository[ID, P, PC]
+  val repository: NewSourceRepository[ID, P, PC]
 
   def createPeriod(nino: Nino, id: ID, period: P): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
 
-    periodRepository.retrieve(id, nino).flatMap {
+    repository.retrieve(id, nino).flatMap {
       case Some(resource) if resource.containsOverlappingPeriod(period) =>
         Future.successful(Left(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", "")))
       case Some(resource) if resource.containsGap(period) =>
@@ -43,7 +43,7 @@ abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodCon
       case Some(resource) if resource.containsMisalignedPeriod(period) =>
         Future.successful(Left(Error(MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the resource accounting period", "")))
       case Some(resource) =>
-        periodRepository.update(id, nino, resource.setPeriodsTo(periodId, period)).flatMap {
+        repository.update(id, nino, resource.setPeriodsTo(periodId, period)).flatMap {
           case true => Future.successful(Right(periodId))
           case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
         }
@@ -52,22 +52,22 @@ abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodCon
   }
 
   def updatePeriod(nino: Nino, id: ID, periodId: PeriodId, period: P): Future[Boolean] = {
-    periodRepository.retrieve(id, nino).flatMap {
+    repository.retrieve(id, nino).flatMap {
       case Some(selfEmployment) if selfEmployment.periodExists(periodId) =>
-        periodRepository.update(id, nino, selfEmployment.setPeriodsTo(periodId, period))
+        repository.update(id, nino, selfEmployment.setPeriodsTo(periodId, period))
       case _ => Future.successful(false)
     }
   }
 
   def retrievePeriod(nino: Nino, id: ID, periodId: PeriodId): Future[Option[P]] = {
-    periodRepository.retrieve(id, nino).map {
+    repository.retrieve(id, nino).map {
       case Some(selfEmployment) => selfEmployment.period(periodId)
       case None => None
     }
   }
 
   def retrieveAllPeriods(nino: Nino, id: ID): Future[Seq[PeriodSummary]] = {
-    periodRepository.retrieve(id, nino).map {
+    repository.retrieve(id, nino).map {
       case Some(selfEmployment) => selfEmployment.periods.map {
         case (k, v) => PeriodSummary(k, v.from, v.to)
       }.toSeq.sorted

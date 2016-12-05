@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 import ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Adjustments, Allowances}
 
 class UKPropertySpec extends JsonSpec {
 

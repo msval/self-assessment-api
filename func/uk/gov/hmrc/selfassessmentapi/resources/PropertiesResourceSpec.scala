@@ -3,12 +3,13 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import org.joda.time.LocalDate
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.selfassessmentapi.resources.models.{Expense, Income}
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{ExpenseType, IncomeType, PropertiesPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Adjustments, _}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class PropertiesResourceSpec extends BaseFunctionalSpec {
 
   implicit def period2Json(period: PropertiesPeriod): JsValue = Json.toJson(period)
+  implicit def annSummary2Json(summary: AnnualSummary): JsValue = Json.toJson(summary)
 
   "createPeriod" should {
     "return code 201 containing a location header when creating a uk property period" in {
@@ -239,6 +240,58 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
         .put(period).at(s"/ni/$nino/properties/uk/periods/ohno")
         .thenAssertThat()
         .statusIs(404)
+    }
+  }
+
+  "create or update annual summary" should {
+    "return code 204 if the create/update is successful" in {
+      val annualSummary = AnnualSummary(
+        Some(Allowances(Some(100), Some(50.50), Some(20.15), Some(10.50))),
+        Some(Adjustments(Some(100.50))),
+        Some(20.35))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .put(annualSummary).at(s"/ni/$nino/properties/uk/periods/$taxYear")
+        .thenAssertThat()
+        .statusIs(204)
+    }
+
+    "return code 400 when provided with an invalid annual summary" in {
+      val annualSummary = AnnualSummary(
+        Some(Allowances(Some(-100), Some(50.50), Some(20.15), Some(10.50))),
+        Some(Adjustments(Some(100.50))),
+        Some(-20.35))
+
+      val expectedJson =
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Invalid request",
+          |  "errors": [
+          |    {
+          |      "code": "INVALID_DATE",
+          |      "path": "/allowances/annualInvestmentAllowance",
+          |      "message": "amounts should be positive numbers with up to 2 decimal places"
+          |    },
+          |    {
+          |      "code": "INVALID_DATE",
+          |      "path": "/rentARoomRelief",
+          |      "message": "amounts should be positive numbers with up to 2 decimal places"
+          |    }
+          |  ]
+          |}
+        """.stripMargin
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .put(annualSummary).at(s"/ni/$nino/properties/uk/periods/$taxYear")
+        .thenAssertThat()
+        .statusIs(400)
+        .contentTypeIsHalJson()
+        .bodyIsLike(expectedJson)
     }
   }
 }
