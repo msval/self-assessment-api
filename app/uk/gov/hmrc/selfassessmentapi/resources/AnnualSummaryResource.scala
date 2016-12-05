@@ -17,32 +17,25 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.{Format, JsValue, Json}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc._
+import play.api.mvc.Results._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.Properties
+import uk.gov.hmrc.selfassessmentapi.domain.AnnualSummaryContainer
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesAnnualSummary, PropertiesPeriod}
-import uk.gov.hmrc.selfassessmentapi.services.{PeriodService, PropertiesService}
+import uk.gov.hmrc.selfassessmentapi.services.AnnualSummaryService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object PropertiesResource extends PeriodResource[PropertyLocation, PropertiesPeriod, Properties] with BaseResource {
+trait AnnualSummaryResource[A <: AnnualSummary, C <: AnnualSummaryContainer[A]] {
+  implicit val annualSummaryFormat: Format[A]
+  val annualSummaryFeatureSwitch: FeatureSwitchAction
+  val annualSummaryService: AnnualSummaryService[A, C]
 
-  override implicit val periodFormat: Format[PropertiesPeriod] = Format(PropertiesPeriod.reads, PropertiesPeriod.writes)
-  override val context = AppContext.apiGatewayLinkContext
-  override val sourceType = SourceType.Properties
-
-  private val service = PropertiesService()
-  override val periodService = service
-
-  private val annSummaryFeatureSwitch = FeatureSwitchAction(sourceType, "annual")
-
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annSummaryFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[PropertiesAnnualSummary, Boolean](request.body) {
-      service.updateAnnualSummary(nino, id, taxYear, _)
+  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
+    validate[A, Boolean](request.body) {
+      annualSummaryService.updateAnnualSummary(nino, id, taxYear, _)
     } match {
       case Left(errorResult) =>
         Future.successful {
@@ -58,11 +51,10 @@ object PropertiesResource extends PeriodResource[PropertyLocation, PropertiesPer
     }
   }
 
-  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annSummaryFeatureSwitch.asyncFeatureSwitch {
-    service.retrieveAnnualSummary(id, taxYear, nino).map {
+  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch {
+    annualSummaryService.retrieveAnnualSummary(id, taxYear, nino).map {
       case Some(summary) => Ok(Json.toJson(summary))
       case None => NotFound
     }
   }
-
 }

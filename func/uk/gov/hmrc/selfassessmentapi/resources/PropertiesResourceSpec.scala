@@ -9,7 +9,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 class PropertiesResourceSpec extends BaseFunctionalSpec {
 
   implicit def period2Json(period: PropertiesPeriod): JsValue = Json.toJson(period)
-  implicit def annSummary2Json(summary: AnnualSummary): JsValue = Json.toJson(summary)
+  implicit def annSummary2Json(summary: PropertiesAnnualSummary): JsValue = Json.toJson(summary)
 
   "createPeriod" should {
     "return code 201 containing a location header when creating a uk property period" in {
@@ -245,7 +245,7 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
 
   "create or update annual summary" should {
     "return code 204 if the create/update is successful" in {
-      val annualSummary = AnnualSummary(
+      val annualSummary = PropertiesAnnualSummary(
         Some(Allowances(Some(100), Some(50.50), Some(20.15), Some(10.50))),
         Some(Adjustments(Some(100.50))),
         Some(20.35))
@@ -281,7 +281,7 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 400 when provided with an invalid annual summary" in {
-      val annualSummary = AnnualSummary(
+      val annualSummary = PropertiesAnnualSummary(
         Some(Allowances(Some(-100), Some(50.50), Some(20.15), Some(10.50))),
         Some(Adjustments(Some(100.50))),
         Some(-20.35))
@@ -321,10 +321,10 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
   "retrieveAnnualSummary" should {
     "return code 200 when retrieving an annual summary that exists" in {
 
-      val annualSummaries = Json.toJson(AnnualSummary(
+      val annualSummaries = PropertiesAnnualSummary(
         Some(Allowances(Some(100), Some(50.50), Some(20.15), Some(10.50))),
         Some(Adjustments(Some(100.50))),
-        Some(20.35)))
+        Some(20.35))
 
       val expectedJson =
         """

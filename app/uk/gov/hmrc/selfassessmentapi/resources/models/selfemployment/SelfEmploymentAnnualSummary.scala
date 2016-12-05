@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.properties
+package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.resources.models._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.resources.models.AnnualSummary
 
-case class AnnualSummary(allowances: Option[Allowances], adjustments: Option[Adjustments], rentARoomRelief: Option[Amount])
+case class SelfEmploymentAnnualSummary(allowances: Option[Allowances], adjustments: Option[Adjustments]) extends AnnualSummary
 
-object AnnualSummary {
-  implicit val writes: Writes[AnnualSummary] = Json.writes[AnnualSummary]
+object SelfEmploymentAnnualSummary {
+  implicit val writer = Json.writes[SelfEmploymentAnnualSummary]
 
-  implicit val reader: Reads[AnnualSummary] = (
+  implicit val reader: Reads[SelfEmploymentAnnualSummary] = (
     (__ \ "allowances").readNullable[Allowances] and
-      (__ \ "adjustments").readNullable[Adjustments] and
-      (__ \ "rentARoomRelief").readNullable[Amount](positiveAmountValidator)
-    ) (AnnualSummary.apply _)
+      (__ \ "adjustments").readNullable[Adjustments]
+    ) (SelfEmploymentAnnualSummary.apply _)
 }

@@ -1,8 +1,8 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.LocalDate
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, Expense, Income, PeriodId}
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -14,6 +14,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     commencementDate = LocalDate.now.minusDays(1))
 
   implicit def selfEmployment2Json(selfEmployment: SelfEmployment): JsValue = Json.toJson(selfEmployment)
+  implicit def annSummary2Json(summary: SelfEmploymentAnnualSummary): JsValue = Json.toJson(summary)
 
   "create" should {
     "return code 201 when creating a valid a self-employment source of income" in {
@@ -398,7 +399,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "updateAnnualSummary" should {
     "return code 204 when updating an annual summary for a valid self-employment source" in {
-      val annualSummaries = Json.toJson(AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
+      val annualSummaries = SelfEmploymentAnnualSummary(Some(Allowances.example), Some(Adjustments.example))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -413,7 +414,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 404 when updating an annual summary for an invalid self-employment source" in {
-      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
+      val annualSummaries = SelfEmploymentAnnualSummary(Some(Allowances.example), Some(Adjustments.example))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -426,7 +427,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 400 when updating an annual summary providing an invalid adjustment & allowance" in {
       val invalidAdjustment = Adjustments.example.copy(includedNonTaxableProfits = Some(-100), overlapReliefUsed = Some(-100))
       val invalidAllowances = Allowances.example.copy(capitalAllowanceMainPool = Some(-100))
-      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(invalidAllowances), Some(invalidAdjustment)))
+      val annualSummaries = SelfEmploymentAnnualSummary(Some(invalidAllowances), Some(invalidAdjustment))
 
       val expectedBody =
         s"""
@@ -470,7 +471,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrieveAnnualSummary" should {
     "return code 200 when retrieving an annual summary that exists" in {
-      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
+      val annualSummaries = SelfEmploymentAnnualSummary(Some(Allowances.example), Some(Adjustments.example))
       val expectedJson = Json.toJson(annualSummaries).toString()
 
       given()

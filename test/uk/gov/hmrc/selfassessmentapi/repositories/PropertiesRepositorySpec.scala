@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
 import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Allowances, AnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Allowances, PropertiesAnnualSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -58,7 +58,7 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
       await(repo.retrieve(location, nino)) shouldBe Some(properties)
 
       val updatedProperties = properties.copy(annualSummaries =
-        Map(TaxYear("2016-17") -> AnnualSummary(Some(Allowances(annualInvestmentAllowance = Some(50.25))), None, None)))
+        Map(TaxYear("2016-17") -> PropertiesAnnualSummary(Some(Allowances(annualInvestmentAllowance = Some(50.25))), None, None)))
       await(repo.update(location, nino, updatedProperties))
       await(repo.retrieve(location, nino)) shouldBe Some(updatedProperties)
     }

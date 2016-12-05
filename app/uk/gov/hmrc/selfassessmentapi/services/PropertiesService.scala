@@ -23,26 +23,27 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.{Location, PeriodId}
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{AnnualSummary, PropertiesPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesAnnualSummary, PropertiesPeriod}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PropertiesService extends PeriodService[Location, PropertiesPeriod, Properties] {
+class PropertiesService extends PeriodService[Location, PropertiesPeriod, Properties] with AnnualSummaryService[PropertiesAnnualSummary, Properties] {
 
-  override val repository = PropertiesRepository()
+  override val periodRepository = PropertiesRepository()
+  override val annualSummaryRepository = periodRepository
 
   private def create(nino: Nino, location: Location): Future[Option[Properties]] = {
     val properties = Properties(BSONObjectID.generate, LocalDate.now(DateTimeZone.UTC), nino, location, Map.empty, Map.empty)
-    repository.create(properties).map {
+    periodRepository.create(properties).map {
       case true => Some(properties)
       case false => None
     }
   }
 
   override def createPeriod(nino: Nino, location: Location, period: PropertiesPeriod): Future[Either[Error, PeriodId]] = {
-    repository.retrieve(location, nino).flatMap { opt =>
+    periodRepository.retrieve(location, nino).flatMap { opt =>
       if (opt.isEmpty) create(nino, location) else Future.successful(opt)
     }.flatMap {
       case Some(_) => super.createPeriod(nino, location, period)
@@ -50,20 +51,13 @@ class PropertiesService extends PeriodService[Location, PropertiesPeriod, Proper
     }
   }
 
-  def updateAnnualSummary(nino: Nino, location: Location, taxYear: TaxYear, summary: AnnualSummary) =
-    repository.retrieve(location, nino).flatMap { opt =>
+  def updateAnnualSummary(nino: Nino, location: Location, taxYear: TaxYear, summary: PropertiesAnnualSummary) =
+    periodRepository.retrieve(location, nino).flatMap { opt =>
       if (opt.isEmpty) create(nino, location) else Future.successful(opt)
     }.flatMap {
-      case Some(properties) => repository.update(location, nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
+      case Some(properties) => periodRepository.update(location, nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
       case None => throw new RuntimeException("Could not persist Properties to the database. Is the database available?")
     }
-
-  def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[AnnualSummary]] = {
-    repository.retrieve(id, nino).map {
-      case Some(properties) => properties.annualSummary(taxYear)
-      case None => None
-    }
-  }
 }
 
 object PropertiesService {

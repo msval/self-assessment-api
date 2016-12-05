@@ -21,21 +21,21 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentsRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, AnnualSummary, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, SelfEmploymentAnnualSummary, SelfEmploymentPeriod}
 import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.errors.BusinessException
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait SelfEmploymentsService extends PeriodService[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] {
+trait SelfEmploymentsService extends PeriodService[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] with AnnualSummaryService[SelfEmploymentAnnualSummary, domain.SelfEmployment] {
 
   def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]]
   def update(nino: Nino, selfEmployment: SelfEmployment, id: SourceId): Future[Boolean]
   def retrieve(nino: Nino, id: SourceId): Future[Option[SelfEmployment]]
   def retrieveAll(nino: Nino): Future[Seq[SelfEmployment]]
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, summary: AnnualSummary): Future[Boolean]
-  def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[AnnualSummary]]
+  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, summary: SelfEmploymentAnnualSummary): Future[Boolean]
+  def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[SelfEmploymentAnnualSummary]]
 }
 
 object SelfEmploymentsService {
@@ -44,7 +44,8 @@ object SelfEmploymentsService {
 
 class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) extends SelfEmploymentsService {
 
-  override val repository: SelfEmploymentsRepository = mongoRepository
+  override val periodRepository = mongoRepository
+  override val annualSummaryRepository = mongoRepository
 
   override def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]] = {
     val id = BSONObjectID.generate
@@ -81,18 +82,11 @@ class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) ex
   override def retrieveAll(nino: Nino): Future[Seq[SelfEmployment]] =
     mongoRepository.retrieveAll(nino).map(_.map(_.toModel))
 
-  override def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, summary: AnnualSummary): Future[Boolean] = {
+  override def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, summary: SelfEmploymentAnnualSummary): Future[Boolean] = {
     mongoRepository.retrieve(id, nino).flatMap {
       case Some(selfEmployment) =>
         mongoRepository.update(id, nino, selfEmployment.copy(annualSummaries = selfEmployment.annualSummaries.updated(taxYear, summary)))
       case None => Future.successful(false)
-    }
-  }
-
-  override def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[AnnualSummary]] = {
-    mongoRepository.retrieve(id, nino).map {
-      case Some(selfEmployment) => selfEmployment.annualSummary(taxYear)
-      case None => None
     }
   }
 

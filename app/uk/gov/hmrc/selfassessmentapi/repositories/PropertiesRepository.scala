@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PropertiesRepository(implicit mongo: () => DB)
-  extends NewSourceRepository[Location, PropertiesPeriod, Properties]("properties", Properties.mongoFormats) {
+  extends NewSourceRepository[Location, Properties]("properties", Properties.mongoFormats) {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("nino", Ascending)), name = Some("properties_nino"), unique = false),

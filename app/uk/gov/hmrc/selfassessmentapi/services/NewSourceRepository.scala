@@ -27,14 +27,14 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.Period
 
 import scala.concurrent.Future
 
-abstract class NewSourceRepository[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]]
-  (repoName: String, domainFormat: Format[PC])(implicit mongo: () => DB, manifest: Manifest[PC])
-  extends ReactiveRepository[PC, BSONObjectID](
+abstract class NewSourceRepository[ID <: String, C]
+  (repoName: String, domainFormat: Format[C])(implicit mongo: () => DB, manifest: Manifest[C])
+  extends ReactiveRepository[C, BSONObjectID](
   repoName,
   mongo,
   domainFormat,
   idFormat = ReactiveMongoFormats.objectIdFormats) {
 
-  def retrieve(id: ID, nino: Nino): Future[Option[PC]]
-  def update(id: ID, nino: Nino, periodContainer: PC): Future[Boolean]
+  def retrieve(id: ID, nino: Nino): Future[Option[C]]
+  def update(id: ID, nino: Nino, periodContainer: C): Future[Boolean]
 }
