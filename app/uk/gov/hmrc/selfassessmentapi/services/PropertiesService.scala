@@ -53,6 +53,12 @@ class PropertiesService extends PeriodService[Location, PropertiesPeriod, Proper
       case None => Future.successful(false)
     }
 
+  def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[AnnualSummary]] = {
+    repository.retrieve(id, nino).map {
+      case Some(properties) => properties.annualSummary(taxYear)
+      case None => None
+    }
+  }
 }
 
 object PropertiesService {

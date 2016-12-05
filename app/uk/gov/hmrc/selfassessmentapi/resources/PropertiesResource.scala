@@ -17,11 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
+import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.{NotFound, Ok}
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{AnnualSummary, PropertiesPeriod}
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesService
@@ -53,4 +54,12 @@ object PropertiesResource extends PeriodResource[PropertyLocation, PropertiesPer
       }
     }
   }
+
+  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annSummaryFeatureSwitch.asyncFeatureSwitch {
+    service.retrieveAnnualSummary(id, taxYear, nino).map {
+      case Some(summary) => Ok(Json.toJson(summary))
+      case None => NotFound
+    }
+  }
+
 }

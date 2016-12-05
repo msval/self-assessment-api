@@ -21,8 +21,8 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, PeriodId, PropertyLocation, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{AnnualSummary, PropertiesPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, PeriodId, PropertyLocation, TaxYear}
 
 case class Properties(id: BSONObjectID,
                       lastModifiedDateTime: LocalDate,
@@ -33,7 +33,7 @@ case class Properties(id: BSONObjectID,
   private val startTaxYear = LocalDate.parse("2016-04-06")
   private val endTaxYear = LocalDate.parse("2017-04-05")
   private val accountingPeriod = AccountingPeriod(startTaxYear, endTaxYear)
-
+  def annualSummary(taxYear: TaxYear): Option[AnnualSummary] = annualSummaries.get(taxYear)
   override def setPeriodsTo(periodId: PeriodId, period: PropertiesPeriod): Properties =
     this.copy(periods = periods.updated(periodId, period))
 

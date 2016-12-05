@@ -28,6 +28,7 @@ PUT  /ni/:nino/properties/:id/periods/:periodId   uk.gov.hmrc.selfassessmentapi.
 
 # Properties Annual Summaries
 PUT  /ni/:nino/properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
+GET  /ni/:nino/properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 
 #########################
 # Liability Calculation #

@@ -294,4 +294,48 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(expectedJson)
     }
   }
+
+
+//  "retrieveAnnualSummary" should {
+//    "return code 200 when retrieving an annual summary that exists" in {
+//
+//      val annualSummaries = Json.toJson(AnnualSummary(
+//        Some(Allowances(Some(-100), Some(50.50), Some(20.15), Some(10.50))),
+//        Some(Adjustments(Some(100.50))),
+//        Some(-20.35)))
+//
+//      val expectedJson = Json.toJson(annualSummaries).toString()
+//
+//      given()
+//        .userIsAuthorisedForTheResource(nino)
+//        .when()
+//        .put(annualSummaries).at(s"/ni/$nino/self-employments")
+//        .thenAssertThat()
+//        .statusIs(201)
+//        .when()
+//        .put(annualSummaries).at(s"%sourceLocation%/$taxYear")
+//        .thenAssertThat()
+//        .statusIs(204)
+//        .when()
+//        .get(s"%sourceLocation%/$taxYear")
+//        .thenAssertThat()
+//        .statusIs(200)
+//        .contentTypeIsJson()
+//        .bodyIsLike(expectedJson)
+//    }
+//
+//    "return code 404 when retrieving a non-existent annual summary" in {
+//
+//      given()
+//        .userIsAuthorisedForTheResource(nino)
+//        .when()
+//        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+//        .thenAssertThat()
+//        .statusIs(201)
+//        .when()
+//        .get(s"%sourceLocation%/$taxYear")
+//        .thenAssertThat()
+//        .statusIs(404)
+//    }
+//  }
 }
