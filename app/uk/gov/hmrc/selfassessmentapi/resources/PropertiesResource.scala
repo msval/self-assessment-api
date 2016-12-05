@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.{NotFound, Ok}
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{AnnualSummary, PropertiesPeriod}
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesService
@@ -31,6 +30,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object PropertiesResource extends PeriodResource[PropertyLocation, PropertiesPeriod, Properties] with BaseResource {
+
+  override implicit val format: Format[PropertiesPeriod] = Format(PropertiesPeriod.reads, PropertiesPeriod.writes)
   override val context = AppContext.apiGatewayLinkContext
   override val service = PropertiesService()
   override val sourceType = SourceType.Properties

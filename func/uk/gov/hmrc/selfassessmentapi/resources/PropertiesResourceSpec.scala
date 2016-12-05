@@ -250,12 +250,34 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
         Some(Adjustments(Some(100.50))),
         Some(20.35))
 
+      val expectedJson =
+        """
+          |{
+          |  "allowances": {
+          |    "annualInvestmentAllowance": 100,
+          |    "businessPremisesRenovationAllowance": 50.50,
+          |    "otherCapitalAllowance": 20.15,
+          |    "wearAndTearAllowance": 10.50
+          |  },
+          |  "adjustments": {
+          |   "lossBroughtForward": 100.50
+          |  },
+          |  "rentARoomRelief": 20.35
+          |}
+        """.stripMargin
+
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(annualSummary).at(s"/ni/$nino/properties/uk/periods/$taxYear")
+        .put(annualSummary).at(s"/ni/$nino/properties/uk/$taxYear")
         .thenAssertThat()
         .statusIs(204)
+        .when()
+        .get(s"/ni/$nino/properties/uk/$taxYear")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyIsLike(expectedJson)
     }
 
     "return code 400 when provided with an invalid annual summary" in {
@@ -271,12 +293,12 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
           |  "message": "Invalid request",
           |  "errors": [
           |    {
-          |      "code": "INVALID_DATE",
+          |      "code": "INVALID_MONETARY_AMOUNT",
           |      "path": "/allowances/annualInvestmentAllowance",
           |      "message": "amounts should be positive numbers with up to 2 decimal places"
           |    },
           |    {
-          |      "code": "INVALID_DATE",
+          |      "code": "INVALID_MONETARY_AMOUNT",
           |      "path": "/rentARoomRelief",
           |      "message": "amounts should be positive numbers with up to 2 decimal places"
           |    }
@@ -287,55 +309,60 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(annualSummary).at(s"/ni/$nino/properties/uk/periods/$taxYear")
+        .put(annualSummary).at(s"/ni/$nino/properties/uk/$taxYear")
         .thenAssertThat()
         .statusIs(400)
-        .contentTypeIsHalJson()
+        .contentTypeIsJson()
         .bodyIsLike(expectedJson)
     }
   }
 
 
-//  "retrieveAnnualSummary" should {
-//    "return code 200 when retrieving an annual summary that exists" in {
-//
-//      val annualSummaries = Json.toJson(AnnualSummary(
-//        Some(Allowances(Some(-100), Some(50.50), Some(20.15), Some(10.50))),
-//        Some(Adjustments(Some(100.50))),
-//        Some(-20.35)))
-//
-//      val expectedJson = Json.toJson(annualSummaries).toString()
-//
-//      given()
-//        .userIsAuthorisedForTheResource(nino)
-//        .when()
-//        .put(annualSummaries).at(s"/ni/$nino/self-employments")
-//        .thenAssertThat()
-//        .statusIs(201)
-//        .when()
-//        .put(annualSummaries).at(s"%sourceLocation%/$taxYear")
-//        .thenAssertThat()
-//        .statusIs(204)
-//        .when()
-//        .get(s"%sourceLocation%/$taxYear")
-//        .thenAssertThat()
-//        .statusIs(200)
-//        .contentTypeIsJson()
-//        .bodyIsLike(expectedJson)
-//    }
-//
-//    "return code 404 when retrieving a non-existent annual summary" in {
-//
-//      given()
-//        .userIsAuthorisedForTheResource(nino)
-//        .when()
-//        .post(selfEmployment).to(s"/ni/$nino/self-employments")
-//        .thenAssertThat()
-//        .statusIs(201)
-//        .when()
-//        .get(s"%sourceLocation%/$taxYear")
-//        .thenAssertThat()
-//        .statusIs(404)
-//    }
-//  }
+  "retrieveAnnualSummary" should {
+    "return code 200 when retrieving an annual summary that exists" in {
+
+      val annualSummaries = Json.toJson(AnnualSummary(
+        Some(Allowances(Some(100), Some(50.50), Some(20.15), Some(10.50))),
+        Some(Adjustments(Some(100.50))),
+        Some(20.35)))
+
+      val expectedJson =
+        """
+          |{
+          |  "allowances": {
+          |    "annualInvestmentAllowance": 100,
+          |    "businessPremisesRenovationAllowance": 50.50,
+          |    "otherCapitalAllowance": 20.15,
+          |    "wearAndTearAllowance": 10.50
+          |  },
+          |  "adjustments": {
+          |   "lossBroughtForward": 100.50
+          |  },
+          |  "rentARoomRelief": 20.35
+          |}
+        """.stripMargin
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .put(annualSummaries).at(s"/ni/$nino/properties/uk/$taxYear")
+        .thenAssertThat()
+        .statusIs(204)
+        .when()
+        .get(s"/ni/$nino/properties/uk/$taxYear")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyIsLike(expectedJson)
+    }
+
+    "return code 404 when retrieving a non-existent annual summary" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .get(s"/ni/$nino/properties/uk/$taxYear")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+  }
 }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.resources.models.Amount
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 
 case class AnnualSummary(allowances: Option[Allowances], adjustments: Option[Adjustments], rentARoomRelief: Option[Amount])
 
@@ -28,6 +28,6 @@ object AnnualSummary {
   implicit val reader: Reads[AnnualSummary] = (
     (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments] and
-      (__ \ "rentARoomRelief").readNullable[Amount]
+      (__ \ "rentARoomRelief").readNullable[Amount](positiveAmountValidator)
     ) (AnnualSummary.apply _)
 }

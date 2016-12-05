@@ -30,8 +30,8 @@ import uk.gov.hmrc.selfassessmentapi.services.PeriodService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]] {
-
+trait PeriodResource[ID <: String, P <: Period, PC <: PeriodContainer[P, PC]] {
+  implicit val format: Format[P]
   val service: PeriodService[ID, P, PC]
   val sourceType: SourceType
 

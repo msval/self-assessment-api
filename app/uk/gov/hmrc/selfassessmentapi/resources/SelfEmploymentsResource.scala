@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, AnnualSummary, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AnnualSummary, SelfEmployment, SelfEmploymentPeriod}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
 
 import scala.concurrent.ExecutionContext.Implicits._
@@ -32,6 +32,7 @@ import scala.concurrent.Future
 
 object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] with BaseResource {
 
+  override implicit val format: Format[SelfEmploymentPeriod] = Format(SelfEmploymentPeriod.reads, SelfEmploymentPeriod.writes)
   override val context: PeriodId = AppContext.apiGatewayLinkContext
 
   override val service = SelfEmploymentsService()

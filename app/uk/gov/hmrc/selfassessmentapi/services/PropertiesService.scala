@@ -33,24 +33,29 @@ class PropertiesService extends PeriodService[Location, PropertiesPeriod, Proper
 
   override val repository = PropertiesRepository()
 
-  private def create(nino: Nino, location: Location) = {
+  private def create(nino: Nino, location: Location): Future[Option[Properties]] = {
     val properties = Properties(BSONObjectID.generate, LocalDate.now(DateTimeZone.UTC), nino, location, Map.empty, Map.empty)
-    repository.create(properties)
+    repository.create(properties).map {
+      case true => Some(properties)
+      case false => None
+    }
   }
 
   override def createPeriod(nino: Nino, location: Location, period: PropertiesPeriod): Future[Either[Error, PeriodId]] = {
     repository.retrieve(location, nino).flatMap { opt =>
-      if (opt.isEmpty) create(nino, location) else Future.successful(true)
-    }.flatMap { successful =>
-      if (successful) super.createPeriod(nino, location, period) else throw new RuntimeException("Could not persist Properties to the database. Is the database available?")
+      if (opt.isEmpty) create(nino, location) else Future.successful(opt)
+    }.flatMap {
+      case Some(_) => super.createPeriod(nino, location, period)
+      case None => throw new RuntimeException("Could not persist Properties to the database. Is the database available?")
     }
   }
 
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, summary: AnnualSummary) =
-    repository.retrieve(id, nino).flatMap {
-      case Some(properties) =>
-        repository.update(id, nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
-      case None => Future.successful(false)
+  def updateAnnualSummary(nino: Nino, location: Location, taxYear: TaxYear, summary: AnnualSummary) =
+    repository.retrieve(location, nino).flatMap { opt =>
+      if (opt.isEmpty) create(nino, location) else Future.successful(opt)
+    }.flatMap {
+      case Some(properties) => repository.update(location, nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
+      case None => throw new RuntimeException("Could not persist Properties to the database. Is the database available?")
     }
 
   def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[AnnualSummary]] = {
